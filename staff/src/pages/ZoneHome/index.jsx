@@ -1,17 +1,19 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useStaffDemo } from '../../context/DemoContext';
 import { TopBar } from '../../components/TopBar';
 import { useEffect } from 'react';
 
-export function ZoneHome() {
-  const { actions } = useStaffDemo();
+export function ZoneHome({ demoMode = false }) {
+  const { state, actions } = useStaffDemo();
   const navigate = useNavigate();
+  const location = useLocation();
+  const basePath = location.pathname.startsWith('/demo') ? '/demo' : '';
 
   useEffect(() => {
     if (state.activeIncident) {
-      navigate('/incident');
+      navigate(`${basePath}/incident`);
     }
-  }, [state.activeIncident, navigate]);
+  }, [basePath, state.activeIncident, navigate]);
 
   return (
     <>
@@ -26,14 +28,14 @@ export function ZoneHome() {
         </div>
 
         {/* Demo Button to simulate an incident trigger from the admin */}
-        <div style={{ marginTop: 'auto' }}>
+        {demoMode && <div style={{ marginTop: 'auto' }}>
           <button 
             className="btn btn--ghost btn--block"
             onClick={() => actions.setIncident({ crisisType: 'fire', severity: 2 })}
           >
-            [Demo] Activate Incident
+            Activate demo incident
           </button>
-        </div>
+        </div>}
       </div>
     </>
   );

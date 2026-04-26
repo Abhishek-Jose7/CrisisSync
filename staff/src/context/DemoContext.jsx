@@ -1,10 +1,12 @@
-import { createContext, useContext, useReducer, useCallback } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useMemo, useReducer } from 'react';
 
 const StaffDemoContext = createContext(null);
 
-const INITIAL_STATE = {
+const BASE_STATE = {
   venueId: 'demo-venue-001',
-  staffUser: null, // Set on login
+  mode: 'main',
+  staffUser: null,
   zones: [
     { zoneId: 'zone-floor7', name: 'Floor 7', type: 'floor' },
     { zoneId: 'zone-lobby', name: 'Lobby', type: 'lobby' },
@@ -29,12 +31,31 @@ const INITIAL_STATE = {
   }
 };
 
+const storageKey = (mode, uid) => `crisissync:staff:${mode}:profile:${uid}`;
+
+function createInitialState(mode) {
+  return {
+    ...BASE_STATE,
+    mode,
+    staffUser: null,
+  };
+}
+
 function reducer(state, action) {
   switch (action.type) {
     case 'LOGIN':
-      return { ...state, staffUser: { staffId: 'warden-001', name: 'Ravi Sharma', role: 'warden', assignedZoneId: 'zone-floor7' } };
+      return { ...state, staffUser: action.payload };
+    case 'COMPLETE_ONBOARDING':
+      return {
+        ...state,
+        staffUser: {
+          ...state.staffUser,
+          ...action.payload,
+          profileComplete: true,
+        },
+      };
     case 'LOGOUT':
-      return INITIAL_STATE;
+      return createInitialState(state.mode);
     case 'SET_INCIDENT':
       return { ...state, activeIncident: action.payload, zoneStatus: 'notified', completedTaskIds: [] };
     case 'MARK_TASK':
@@ -55,17 +76,44 @@ function reducer(state, action) {
   }
 }
 
-export function StaffDemoProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+export function StaffDemoProvider({ children, mode = 'main' }) {
+  const [state, dispatch] = useReducer(reducer, mode, createInitialState);
 
-  const actions = {
-    login: () => dispatch({ type: 'LOGIN' }),
+  const actions = useMemo(() => ({
+    login: (firebaseUser) => {
+      const savedProfile = localStorage.getItem(storageKey(mode, firebaseUser.uid));
+      const profile = savedProfile ? JSON.parse(savedProfile) : {};
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName || profile.name || 'Staff member',
+          role: profile.role || 'warden',
+          assignedZoneId: profile.assignedZoneId || 'zone-floor7',
+          currentShift: profile.currentShift || 'evening',
+          profileComplete: Boolean(profile.profileComplete),
+        },
+      });
+      return Boolean(profile.profileComplete);
+    },
+    completeOnboarding: (profile) => {
+      if (!state.staffUser?.uid) return;
+      const completedProfile = { ...state.staffUser, ...profile, profileComplete: true };
+      localStorage.setItem(storageKey(mode, state.staffUser.uid), JSON.stringify(completedProfile));
+      dispatch({ type: 'COMPLETE_ONBOARDING', payload: completedProfile });
+    },
+    hasCompletedProfile: (uid) => {
+      const savedProfile = localStorage.getItem(storageKey(mode, uid));
+      if (!savedProfile) return false;
+      return Boolean(JSON.parse(savedProfile).profileComplete);
+    },
     logout: () => dispatch({ type: 'LOGOUT' }),
     setIncident: (sys) => dispatch({ type: 'SET_INCIDENT', payload: sys }),
     markTask: (id) => dispatch({ type: 'MARK_TASK', payload: id }),
     updateStatus: (status) => dispatch({ type: 'UPDATE_STATUS', payload: status }),
     clearIncident: () => dispatch({ type: 'CLEAR_INCIDENT' })
-  };
+  }), [mode, state.staffUser]);
 
   return (
     <StaffDemoContext.Provider value={{ state, actions }}>
@@ -76,6 +124,6 @@ export function StaffDemoProvider({ children }) {
 
 export function useStaffDemo() {
   const ctx = useContext(StaffDemoContext);
-  if (!ctx) return { state: { staffUser: { id: "prod_user" } }, actions: {} };
+  if (!ctx) return { state: createInitialState('main'), actions: {} };
   return ctx;
 }

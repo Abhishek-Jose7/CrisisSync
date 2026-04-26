@@ -2,19 +2,21 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../../../shared/firebase/config';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { useAdminAuth } from '../../context/AuthContext';
 
 export function Login() {
   const navigate = useNavigate();
+  const { refreshSetupState } = useAdminAuth();
   const [loading, setLoading] = useState(false);
 
   async function handleGoogleLogin() {
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      // After login, ideally we would check firestore if the org exists
-      // If none, navigate to onboarding. Otherwise to command.
-      navigate('/onboarding');
+      const result = await signInWithPopup(auth, provider);
+      const complete = localStorage.getItem(`crisissync:admin:onboarding:${result.user.uid}`) === 'complete';
+      refreshSetupState(result.user);
+      navigate(complete ? '/command' : '/onboarding', { replace: true });
     } catch (error) {
       console.error(error);
       alert('Login failed. Please try again.');
@@ -30,7 +32,7 @@ export function Login() {
           🛡️
         </div>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '8px' }}>CrisisSync Admin</h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Enterprise Emergency Coordination Platform</p>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Sign in first. New admins continue into venue setup before the command center opens.</p>
         
         <button 
           onClick={handleGoogleLogin} 

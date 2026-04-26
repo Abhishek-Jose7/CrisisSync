@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = location.pathname.startsWith('/demo') ? '/demo' : '';
+  const go = (path) => navigate(`${basePath}${path}`);
 
   return (
     <aside className="admin-sidebar" style={{
@@ -22,14 +24,14 @@ export function Sidebar() {
       </div>
       
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 var(--space-2)' }}>
-        <SidebarItem icon="⚡" label="Command Center" path="/command" currentPath={location.pathname} onClick={() => navigate('/command')} />
-        <SidebarItem icon="🚨" label="Incidents" path="/incidents" currentPath={location.pathname} onClick={() => navigate('/incidents')} />
-        <SidebarItem icon="🗺️" label="Zones" path="/zones" currentPath={location.pathname} onClick={() => navigate('/zones')} />
-        <SidebarItem icon="👥" label="Staff" path="/staff" currentPath={location.pathname} onClick={() => navigate('/staff')} />
-        <SidebarItem icon="📋" label="Playbooks" path="/playbooks" currentPath={location.pathname} onClick={() => navigate('/playbooks')} />
-        <SidebarItem icon="📄" label="Reports" path="/reports" currentPath={location.pathname} onClick={() => navigate('/reports')} />
-        <SidebarItem icon="📈" label="Analytics" path="/analytics" currentPath={location.pathname} onClick={() => navigate('/analytics')} />
-        <SidebarItem icon="⚙️" label="Settings" path="/settings" currentPath={location.pathname} onClick={() => navigate('/settings')} />
+        <SidebarItem icon="⚡" label="Command Center" path="/command" basePath={basePath} currentPath={location.pathname} onClick={() => go('/command')} />
+        <SidebarItem icon="🚨" label="Incidents" path="/incidents" basePath={basePath} currentPath={location.pathname} onClick={() => go('/incidents')} />
+        <SidebarItem icon="🗺️" label="Zones" path="/zones" basePath={basePath} currentPath={location.pathname} onClick={() => go('/zones')} />
+        <SidebarItem icon="👥" label="Staff" path="/staff" basePath={basePath} currentPath={location.pathname} onClick={() => go('/staff')} />
+        <SidebarItem icon="📋" label="Playbooks" path="/playbooks" basePath={basePath} currentPath={location.pathname} onClick={() => go('/playbooks')} />
+        <SidebarItem icon="📄" label="Reports" path="/reports" basePath={basePath} currentPath={location.pathname} onClick={() => go('/reports')} />
+        <SidebarItem icon="📈" label="Analytics" path="/analytics" basePath={basePath} currentPath={location.pathname} onClick={() => go('/analytics')} />
+        <SidebarItem icon="⚙️" label="Settings" path="/settings" basePath={basePath} currentPath={location.pathname} onClick={() => go('/settings')} />
       </nav>
 
       <div style={{ marginTop: 'auto', padding: '0 var(--space-4)' }}>
@@ -47,8 +49,8 @@ export function Sidebar() {
   );
 }
 
-function SidebarItem({ icon, label, path, currentPath, onClick }) {
-  const active = currentPath === path;
+function SidebarItem({ icon, label, path, basePath, currentPath, onClick }) {
+  const active = currentPath === `${basePath}${path}`;
   return (
     <button onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: '12px',

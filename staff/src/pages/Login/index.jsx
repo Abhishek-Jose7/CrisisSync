@@ -5,7 +5,7 @@ import { InstallAppButton } from '../../components/InstallAppButton';
 import { auth } from '../../../../shared/firebase/config';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
-export function Login() {
+export function Login({ basePath = '' }) {
   const { actions } = useStaffDemo();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -15,8 +15,9 @@ export function Login() {
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      navigate('/');
+      const result = await signInWithPopup(auth, provider);
+      const profileComplete = actions.login(result.user);
+      navigate(profileComplete ? `${basePath}/` : `${basePath}/onboarding`, { replace: true });
     } catch (error) {
       console.error(error);
       alert('Login failed. Please try again.');
@@ -30,7 +31,7 @@ export function Login() {
       <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
         <div style={{ width: 64, height: 64, background: 'var(--severity-3)', borderRadius: 'var(--radius-lg)', margin: '0 auto var(--space-4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '24px' }}>CS</div>
         <h1 style={{ fontSize: '1.5rem', marginBottom: 'var(--space-2)' }}>Staff Login</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Enter 4-digit PIN to access warden dashboard</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Sign in with Google before opening your zone dashboard</p>
       </div>
 
       <div style={{ width: '100%', maxWidth: 320 }}>

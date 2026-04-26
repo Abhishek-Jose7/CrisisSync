@@ -1,8 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Map, MessageSquare, Users, FileText } from 'lucide-react';
-import { useStaffDemo } from '../context/DemoContext';
 
-export function BottomNav() {
+export function BottomNav({ basePath = '' }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,12 +27,13 @@ export function BottomNav() {
       padding: '8px 16px'
     }}>
       {NAV_ITEMS.map((item) => {
-        const isActive = location.pathname === item.path || (item.path === '/incident' && location.pathname === '/');
+        const fullPath = `${basePath}${item.path}`;
+        const isActive = location.pathname === fullPath || (item.path === '/incident' && location.pathname === `${basePath}/`);
         const Icon = item.icon;
         return (
           <button
             key={item.path}
-            onClick={() => navigate(item.path)}
+            onClick={() => navigate(fullPath)}
             style={{
               flex: 1,
               display: 'flex',

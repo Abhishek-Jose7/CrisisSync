@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDemo } from '../context/DemoContext';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
@@ -7,7 +7,7 @@ import { FeedPanel } from './FeedPanel';
 export function AppLayout({ children }) {
   const { state } = useDemo();
   const location = useLocation();
-  const showFeed = location.pathname === '/command' && state.activeIncident;
+  const showFeed = location.pathname.endsWith('/command') && state.activeIncident;
 
   return (
     <div className="app-layout">

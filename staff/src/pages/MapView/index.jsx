@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useStaffDemo } from '../../context/DemoContext';
 import { MapContainer, ImageOverlay, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';

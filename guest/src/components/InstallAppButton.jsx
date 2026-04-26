@@ -1,24 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Download } from 'lucide-react';
 
+function detectIOS() {
+  const ua = window.navigator.userAgent;
+  const webkit = !!ua.match(/WebKit/i);
+  const isSafari = webkit && !ua.match(/CriOS/i);
+  return Boolean(isSafari && ua.match(/Mobile/i));
+}
+
+function detectInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
 export function InstallAppButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS] = useState(detectIOS);
+  const [isInstalled, setIsInstalled] = useState(detectInstalled);
 
   useEffect(() => {
-    // Check if iOS
-    const ua = window.navigator.userAgent;
-    const webkit = !!ua.match(/WebKit/i);
-    const isSafari = webkit && !ua.match(/CriOS/i);
-    const isMobileSafari = isSafari && ua.match(/Mobile/i);
-    setIsIOS(isMobileSafari);
-
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-      setIsInstalled(true);
-    }
-
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);

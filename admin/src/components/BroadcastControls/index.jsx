@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useDemo } from '../../context/DemoContext';
 import { Radio } from 'lucide-react';
 
 export function BroadcastBar() {
-  const { state } = useDemo();
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(false);
 

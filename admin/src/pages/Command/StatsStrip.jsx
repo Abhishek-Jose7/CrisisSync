@@ -1,5 +1,4 @@
 import { useDemo } from '../../context/DemoContext';
-import { getStatusColor } from '../../services/utils';
 
 export function StatsStrip() {
   const { state } = useDemo();

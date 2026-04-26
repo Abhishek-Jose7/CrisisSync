@@ -1,5 +1,5 @@
 import { useDemo } from '../context/DemoContext';
-import { ZONE_STATUS_LABELS, CRISIS_TYPES } from '@shared/constants';
+import { CRISIS_TYPES } from '@shared/constants';
 import { formatRelativeTime } from '../services/utils';
 
 export function FeedPanel() {

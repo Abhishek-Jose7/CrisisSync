@@ -1,6 +1,6 @@
 import { useDemo } from '../../context/DemoContext';
 import { formatTime } from '../../services/utils';
-import { BarChart3, Clock, Users, AlertTriangle, CheckCircle, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 export function AnalyticsPage() {
   const { state } = useDemo();

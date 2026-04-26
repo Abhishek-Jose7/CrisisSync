@@ -2,12 +2,22 @@ import { useGuestDemo } from '../../context/DemoContext';
 import { Globe, ShieldCheck, ChevronRight, ShieldAlert, Navigation, Users, Phone } from 'lucide-react';
 import { BottomNav } from '../../components/BottomNav';
 import { InstallAppButton } from '../../components/InstallAppButton';
+import { useEffect } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-export function EvacuationMode() {
+export function EvacuationMode({ basePath = '' }) {
   const { state, actions } = useGuestDemo();
   const navigate = useNavigate();
+  const location = useLocation();
+  const demoToken = basePath === '/demo' ? `/${state.qrToken || location.pathname.split('/')[2] || 'floor7-ghi789'}` : '';
+  const routePrefix = `${basePath}${demoToken}`;
+
+  useEffect(() => {
+    if (!state.sessionId && basePath === '/demo') {
+      actions.startSession(location.pathname.split('/')[2] || 'floor7-ghi789');
+    }
+  }, [actions, basePath, location.pathname, state.sessionId]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: '#f9f9f9', margin: 'calc(-1 * var(--space-4))', padding: 'var(--space-4)', paddingBottom: 80 }}>
@@ -27,7 +37,7 @@ export function EvacuationMode() {
         {/* Text */}
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-12)' }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#101828', marginBottom: '8px' }}>We're here to keep you safe.</h1>
-          <p style={{ fontSize: '1rem', color: '#475467' }}>Help is one tap away.</p>
+          <p style={{ fontSize: '1rem', color: '#475467' }}>{state.zoneName || 'Your zone'} guidance is active.</p>
         </div>
 
         {/* Giant SOS BUTTON */}
@@ -38,9 +48,11 @@ export function EvacuationMode() {
             color: 'white', fontSize: '3rem', fontWeight: 800,
             display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.1s'
           }}>
-            SOS
+            {state.sosSent ? 'SENT' : 'SOS'}
           </button>
-          <div style={{ marginTop: 'var(--space-4)', fontSize: '0.875rem', fontWeight: 600, color: '#475467' }}>Tap for Help</div>
+          <div style={{ marginTop: 'var(--space-4)', fontSize: '0.875rem', fontWeight: 600, color: '#475467' }}>
+            {state.sosSent ? 'Staff have been notified' : 'Tap for Help'}
+          </div>
         </div>
 
         {/* Active Alert Nav */}
@@ -50,15 +62,15 @@ export function EvacuationMode() {
             <div style={{ color: 'var(--color-danger)' }}><ShieldAlert size={24} /></div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-danger)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '4px' }}>Active Alert in your area</div>
-              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#101828' }}>Fire reported in Floor 1</div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#101828' }}>Fire reported near {state.zoneName || 'your zone'}</div>
               <div style={{ fontSize: '0.75rem', color: '#475467', marginTop: '2px' }}>Please follow instructions below.</div>
             </div>
             <ChevronRight size={18} color="var(--color-danger)" />
           </div>
 
-          <MenuLink onClick={() => navigate('/guide')} icon={<ShieldCheck size={20} color="#3b82f6" />} title="What to do" subtitle="Step-by-step safety instructions" />
-          <MenuLink onClick={() => navigate('/guide')} icon={<Navigation size={20} color="#10b981" />} title="Evacuation Guide" subtitle="Find your way to safety" />
-          <MenuLink onClick={() => navigate('/assembly')} icon={<Users size={20} color="#8b5cf6" />} title="Assembly Point" subtitle="Where to go after evacuation" />
+          <MenuLink onClick={() => navigate(`${routePrefix}/guide`)} icon={<ShieldCheck size={20} color="#3b82f6" />} title="What to do" subtitle="Step-by-step safety instructions" />
+          <MenuLink onClick={() => navigate(`${routePrefix}/guide`)} icon={<Navigation size={20} color="#10b981" />} title="Evacuation Guide" subtitle="Find your way to safety" />
+          <MenuLink onClick={() => navigate(`${routePrefix}/assembly`)} icon={<Users size={20} color="#8b5cf6" />} title="Assembly Point" subtitle="Where to go after evacuation" />
           <MenuLink icon={<Phone size={20} color="#f59e0b" />} title="Emergency Numbers" subtitle="Important contacts" />
 
         </div>

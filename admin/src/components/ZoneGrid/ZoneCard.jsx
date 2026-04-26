@@ -1,6 +1,6 @@
 import { useDemo } from '../../context/DemoContext';
 import { getStatusColor, getStatusModifier, formatStatusLabel, formatRelativeTime } from '../../services/utils';
-import { CheckCircle, AlertCircle, Clock, User, BarChart } from 'lucide-react';
+import { CheckCircle, AlertCircle, Clock, BarChart } from 'lucide-react';
 
 export function ZoneCard({ zone, status, sosCount }) {
   const { actions } = useDemo();

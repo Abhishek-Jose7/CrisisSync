@@ -1,30 +1,42 @@
-import { Link } from 'react-router-dom';
-import { ShieldAlert, ExternalLink, LogIn } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { Building2, ExternalLink, ShieldAlert } from 'lucide-react';
+import { roleLinks } from '../../siteConfig';
+
+const navItems = [
+  { to: '/platform', label: 'Platform' },
+  { to: '/roles', label: 'Role Access' },
+  { to: '/compliance', label: 'Compliance' },
+  { to: '/demo', label: 'Demo' },
+];
 
 export function Navbar() {
   return (
-    <nav className="navbar">
-      <div className="container">
-        <Link to="/" className="brand">
-          <ShieldAlert size={24} color="var(--accent-brand)" />
-          CrisisSync
-        </Link>
+    <nav className="navbar" aria-label="Primary navigation">
+      <div className="container navbar__inner">
+        <NavLink to="/" className="brand" aria-label="CrisisSync home">
+          <ShieldAlert size={24} />
+          <span>CrisisSync</span>
+        </NavLink>
+
         <div className="nav-links">
-          <Link to="#solutions" className="nav-link">Solutions</Link>
-          <Link to="#how-it-works" className="nav-link">Platform</Link>
-          <Link to="#compliance" className="nav-link">Compliance</Link>
-          
-          <div style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
-            <a href="https://crisis-sync-usof.vercel.app/login" className="btn btn-outline" target="_blank" rel="noopener noreferrer">
-              <LogIn size={16} /> Staff Portal
-            </a>
-            <a href="https://crisis-sync-usof.vercel.app/demo" className="btn btn-outline" target="_blank" rel="noopener noreferrer" style={{ borderColor: 'var(--accent-brand)', color: 'var(--accent-brand)' }}>
-              Staff Demo
-            </a>
-            <a href="https://crisis-sync-jovf.vercel.app/" className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-              Admin Console <ExternalLink size={16} />
-            </a>
-          </div>
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+
+        <div className="nav-actions">
+          <a className="btn btn-outline btn-small" href={roleLinks.staff.production} target="_blank" rel="noreferrer">
+            Staff <ExternalLink size={15} />
+          </a>
+          <a className="btn btn-primary btn-small" href={roleLinks.admin.production} target="_blank" rel="noreferrer">
+            <Building2 size={15} /> Admin
+          </a>
         </div>
       </div>
     </nav>

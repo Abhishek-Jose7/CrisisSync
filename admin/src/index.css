@@ -9,7 +9,10 @@
 :root {
   /* Colors - Operational Dark Mode */
   --bg-dark: #09090b;
+  --bg-root: #09090b;
+  --bg-primary: #111116;
   --bg-panel: #18181b;
+  --bg-surface: #18181b;
   --bg-card: #27272a;
   --bg-elevated: #3f3f46;
   --bg-overlay: #1c1c26;
@@ -44,6 +47,8 @@
   --status-clear-bg: rgba(29, 158, 117, 0.10);
   --status-info: #378ADD;
   --status-info-bg: rgba(55, 138, 221, 0.10);
+  --severity-info: #378ADD;
+  --severity-info-bg: rgba(55, 138, 221, 0.10);
   --status-warning: #EF9F27;
   --status-warning-bg: rgba(239, 159, 39, 0.10);
   --status-danger: #E24B4A;
@@ -195,7 +200,7 @@ body {
 .topbar__title {
   font-size: var(--text-md);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   color: var(--text-primary);
 }
 
@@ -978,7 +983,7 @@ body {
 .section-header__title {
   font-size: var(--text-lg);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   color: var(--text-primary);
 }
 
@@ -1062,7 +1067,7 @@ body {
   font-size: var(--text-2xl);
   font-weight: 800;
   font-family: var(--font-mono);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .stat-card__note {

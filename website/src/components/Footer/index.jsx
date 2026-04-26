@@ -1,40 +1,42 @@
+import { Link } from 'react-router-dom';
+import { roleLinks } from '../../siteConfig';
+
 export function Footer() {
   return (
-    <footer>
-      <div className="container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <div className="brand" style={{ marginBottom: 'var(--spacing-4)' }}>CrisisSync</div>
-            <p className="footer-text" style={{ maxWidth: '300px' }}>
-              We provide digital infrastructure for on-ground synchronization during critical incidents.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 'var(--spacing-12)' }}>
-            <div>
-              <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--spacing-4)', color: 'white' }}>Platform</h4>
-              <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <a href="https://crisis-sync-jovf.vercel.app/" className="footer-text" style={{ textDecoration: 'none' }}>Admin Center</a>
-                <a href="https://crisis-sync-usof.vercel.app/login" className="footer-text" style={{ textDecoration: 'none' }}>Staff PWA</a>
-                <a href="#guest" className="footer-text" style={{ textDecoration: 'none' }}>Guest Access Map</a>
-              </nav>
-            </div>
-            <div>
-              <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--spacing-4)', color: 'white' }}>Compliance</h4>
-              <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="footer-text">Legal Notice</span>
-                <span className="footer-text">Security Architecture</span>
-                <span className="footer-text">Terms of Service</span>
-              </nav>
-            </div>
-          </div>
+    <footer className="footer">
+      <div className="container footer__grid">
+        <div>
+          <Link to="/" className="brand footer__brand">CrisisSync</Link>
+          <p className="footer-text">
+            Digital coordination infrastructure for venue teams during critical incidents.
+          </p>
         </div>
-        <div style={{ marginTop: 'var(--spacing-12)', paddingTop: 'var(--spacing-8)', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <p className="footer-text">© {new Date().getFullYear()} CrisisSync Solutions. All rights reserved.</p>
-          <div className="footer-text" style={{ fontSize: '0.75rem', opacity: 0.6, maxWidth: '500px', textAlign: 'right' }}>
-            <strong>WARNING:</strong> CrisisSync is an operational support tool. It does not replace legally mandated fire panels, 
-            emergency service calls (e.g. 911), or physically certified wardens. Always adhere to building compliance laws.
-          </div>
+
+        <nav aria-label="Production portals">
+          <h2>Production</h2>
+          <a href={roleLinks.admin.production} target="_blank" rel="noreferrer">Admin portal</a>
+          <a href={roleLinks.staff.production} target="_blank" rel="noreferrer">Staff PWA</a>
+          <a href={roleLinks.guest.production} target="_blank" rel="noreferrer">Guest scanner</a>
+        </nav>
+
+        <nav aria-label="Website pages">
+          <h2>Website</h2>
+          <Link to="/platform">Platform</Link>
+          <Link to="/roles">Role Access</Link>
+          <Link to="/demo">Demo URLs</Link>
+          <Link to="/compliance">Compliance</Link>
+        </nav>
+
+        <div className="footer__notice">
+          <h2>Safety Notice</h2>
+          <p>
+            CrisisSync is an operational support tool. It does not replace legally mandated safety systems, emergency service calls, or certified wardens.
+          </p>
         </div>
+      </div>
+      <div className="container footer__bottom">
+        <span>© {new Date().getFullYear()} CrisisSync.</span>
+        <span>Demo and production routes are intentionally separate.</span>
       </div>
     </footer>
   );

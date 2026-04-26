@@ -1,17 +1,6 @@
-import { useDemo } from '../../context/DemoContext';
 import { FeedPanel } from '../../components/FeedPanel';
 
 export function CommandPage() {
-  const { state } = useDemo();
-  
-  const incidentMockParams = state?.activeIncident ? {
-    type: 'FIRE — LEVEL 2', severityHigh: true,
-    activeIncidents: "2", overallSev: "LEVEL 2", affected: "4 / 18", online: "15"
-  } : {
-    type: 'NO ACTIVE INCIDENTS', severityHigh: false,
-    activeIncidents: "0", overallSev: "NONE", affected: "0 / 18", online: "14"
-  };
-
   return (
     <>
         {/* Top Header */}

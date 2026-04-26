@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDemo } from '../../context/DemoContext';
-import { VENUE_TYPES, ZONE_TYPES, RISK_PROFILES, STAFF_ROLES, SHIFTS } from '@shared/constants';
-import { CheckCircle, Circle, ChevronRight, AlertTriangle, Users, MapPin, FileText, Shield, QrCode } from 'lucide-react';
+import { VENUE_TYPES, ZONE_TYPES, RISK_PROFILES, STAFF_ROLES } from '@shared/constants';
+import { CheckCircle, ChevronRight, AlertTriangle, Users, MapPin, FileText, Shield, QrCode } from 'lucide-react';
 
 const WIZARD_STEPS = [
   { id: 'venue', label: 'Venue Details', icon: MapPin },

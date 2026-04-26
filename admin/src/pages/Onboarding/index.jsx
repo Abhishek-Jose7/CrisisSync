@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, ShieldCheck, Map, Users, FileText, QrCode, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useAdminAuth } from '../../context/AuthContext';
 
 export function OnboardingPage() {
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
+  const { completeOnboarding, user } = useAdminAuth();
 
   const STEPS = [
     { id: 1, title: "Organization", icon: <Building2 size={20} /> },
@@ -19,14 +21,19 @@ export function OnboardingPage() {
 
   const handleNext = () => setStep(Math.min(step + 1, 8));
   const handleBack = () => setStep(Math.max(step - 1, 1));
-  const handleFinish = () => navigate('/command');
+  const handleFinish = () => {
+    completeOnboarding();
+    navigate('/command', { replace: true });
+  };
 
   return (
     <div style={{ padding: 'var(--space-8)', display: 'flex', flexDirection: 'column', minHeight: '100%', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)' }}>
       
       <div style={{ textAlign: 'center', marginBottom: 'var(--space-8)' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>CrisisSync Onboarding</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Configure your enterprise emergency coordination infrastructure.</p>
+        <p style={{ color: 'var(--text-secondary)' }}>
+          {user?.email ? `${user.email} is creating a new admin workspace.` : 'Configure your enterprise emergency coordination infrastructure.'}
+        </p>
       </div>
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: 'var(--space-8)', flexWrap: 'wrap', justifyContent: 'center' }}>

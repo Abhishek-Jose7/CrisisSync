@@ -1,5 +1,3 @@
-import { BottomNav } from '../../components/BottomNav';
-
 export function PlaceholderView({ title, icon, description }) {
   return (
     <>

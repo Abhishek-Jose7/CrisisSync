@@ -1,12 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { useStaffDemo } from '../../context/DemoContext';
 import { Bell } from 'lucide-react';
 import { useState } from 'react';
-import { BottomNav } from '../../components/BottomNav';
 
 export function Incident() {
-  const { state, actions } = useStaffDemo();
-  const navigate = useNavigate();
+  const { state } = useStaffDemo();
   const [activeTab, setActiveTab] = useState('tasks');
 
   // Hardcoded for fidelity to mockup

@@ -265,6 +265,79 @@ body {
   margin-bottom: var(--space-4);
 }
 
+.staff-onboarding {
+  justify-content: center;
+  align-items: center;
+}
+
+.onboarding-card {
+  width: min(100%, 460px);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+
+.onboarding-card__icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--status-info-bg);
+  color: var(--status-info);
+}
+
+.onboarding-card h1 {
+  font-size: 1.35rem;
+  margin-bottom: var(--space-2);
+}
+
+.onboarding-card p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-5);
+}
+
+.onboarding-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.onboarding-form label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.onboarding-form .form-input {
+  margin-bottom: 0;
+}
+
+.staff-checklist {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.staff-checklist div {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.staff-checklist svg {
+  flex: 0 0 auto;
+  color: var(--status-clear);
+  margin-top: 2px;
+}
+
 /* ── Horizontal Status Strip ── */
 .status-strip-container {
   display: flex;
