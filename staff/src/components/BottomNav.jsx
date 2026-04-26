@@ -1,16 +1,17 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Map, CheckSquare } from 'lucide-react';
+import { Home, Map, MessageSquare, Users, FileText } from 'lucide-react';
 import { useStaffDemo } from '../context/DemoContext';
 
 export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { state } = useStaffDemo();
 
   const NAV_ITEMS = [
-    { path: '/', label: 'Home', icon: Home },
+    { path: '/incident', label: 'Home', icon: Home },
     { path: '/map', label: 'Map', icon: Map },
-    ...(state.activeIncident ? [{ path: '/incident', label: 'Playbook', icon: CheckSquare }] : []),
+    { path: '/comms', label: 'Comms', icon: MessageSquare },
+    { path: '/contacts', label: 'Contacts', icon: Users },
+    { path: '/resources', label: 'Resources', icon: FileText },
   ];
 
   return (
@@ -20,13 +21,14 @@ export function BottomNav() {
       left: 0,
       right: 0,
       display: 'flex',
-      backgroundColor: 'var(--bg-elevated)',
-      borderTop: '1px solid var(--border-default)',
+      backgroundColor: '#0a0a0c',
+      borderTop: '1px solid rgba(255,255,255,0.05)',
       paddingBottom: 'env(safe-area-inset-bottom)',
       zIndex: 1000,
+      padding: '8px 16px'
     }}>
       {NAV_ITEMS.map((item) => {
-        const isActive = location.pathname === item.path;
+        const isActive = location.pathname === item.path || (item.path === '/incident' && location.pathname === '/');
         const Icon = item.icon;
         return (
           <button
@@ -38,17 +40,17 @@ export function BottomNav() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '12px 0 8px 0',
+              padding: '8px 0',
               background: 'transparent',
               border: 'none',
-              color: isActive ? 'var(--status-info)' : 'var(--text-secondary)',
+              color: isActive ? '#f59e0b' : 'var(--text-secondary)',
               cursor: 'pointer',
-              opacity: isActive ? 1 : 0.7,
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              gap: '4px'
             }}
           >
-            <Icon size={24} style={{ marginBottom: 4 }} />
-            <span style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+            <Icon size={22} />
+            <span style={{ fontSize: '0.65rem', fontWeight: 600 }}>
               {item.label}
             </span>
           </button>

@@ -1,66 +1,70 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useDemo } from '../../context/DemoContext';
-import { LayoutDashboard, Settings, BarChart3, User } from 'lucide-react';
-
-const NAV_ITEMS = [
-  { path: '/command', label: 'Command', icon: LayoutDashboard },
-  { path: '/setup', label: 'Setup', icon: Settings },
-  { path: '/analytics', label: 'Analytics', icon: BarChart3 },
-];
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export function Sidebar() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { state } = useDemo();
-  const adminUser = state.staff.find(s => s.role === 'admin');
+  const location = useLocation();
 
   return (
-    <nav className="sidebar" role="navigation" aria-label="Main navigation">
-      <div className="sidebar__section">
-        <div className="sidebar__label">Operations</div>
-        <ul className="sidebar__nav">
-          {NAV_ITEMS.map(item => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
-            return (
-              <li key={item.path}>
-                <button
-                  className={`sidebar__link ${isActive ? 'sidebar__link--active' : ''}`}
-                  onClick={() => navigate(item.path)}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <Icon className="sidebar__link-icon" size={18} />
-                  <span>{item.label}</span>
-
-                  {item.path === '/command' && state.activeIncident && (
-                    <span className="sidebar__badge sidebar__badge--danger" aria-label="Active incident">
-                      LIVE
-                    </span>
-                  )}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+    <aside className="admin-sidebar" style={{
+      width: '240px',
+      background: '#0d1117',
+      borderRight: '1px solid #1f2937',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: 'var(--space-4) 0',
+      height: '100vh',
+    }}>
+      <div style={{ padding: '0 var(--space-4)', marginBottom: 'var(--space-8)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ width: 32, height: 32, background: 'var(--severity-info-bg)', color: 'var(--severity-info)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          🛡️
+        </div>
+        <div style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', color: 'white' }}>CrisisSync</div>
       </div>
+      
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 var(--space-2)' }}>
+        <SidebarItem icon="⚡" label="Command Center" path="/command" currentPath={location.pathname} onClick={() => navigate('/command')} />
+        <SidebarItem icon="🚨" label="Incidents" path="/incidents" currentPath={location.pathname} onClick={() => navigate('/incidents')} />
+        <SidebarItem icon="🗺️" label="Zones" path="/zones" currentPath={location.pathname} onClick={() => navigate('/zones')} />
+        <SidebarItem icon="👥" label="Staff" path="/staff" currentPath={location.pathname} onClick={() => navigate('/staff')} />
+        <SidebarItem icon="📋" label="Playbooks" path="/playbooks" currentPath={location.pathname} onClick={() => navigate('/playbooks')} />
+        <SidebarItem icon="📄" label="Reports" path="/reports" currentPath={location.pathname} onClick={() => navigate('/reports')} />
+        <SidebarItem icon="📈" label="Analytics" path="/analytics" currentPath={location.pathname} onClick={() => navigate('/analytics')} />
+        <SidebarItem icon="⚙️" label="Settings" path="/settings" currentPath={location.pathname} onClick={() => navigate('/settings')} />
+      </nav>
 
-      <div className="sidebar__spacer" />
-
-      <div className="sidebar__footer">
-        <div className="sidebar__user">
-          <div className="sidebar__avatar" aria-hidden="true">
-            {adminUser?.name?.charAt(0) || 'A'}
-          </div>
-          <div>
-            <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-primary)' }}>
-              {adminUser?.name || 'Admin'}
-            </div>
-            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-              {adminUser?.role || 'admin'}
-            </div>
-          </div>
+      <div style={{ marginTop: 'auto', padding: '0 var(--space-4)' }}>
+        <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: 'var(--radius-md)', padding: 'var(--space-3)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981', textTransform: 'uppercase', marginBottom: '4px' }}>System Status</div>
+          <div style={{ fontSize: '0.875rem', color: 'white' }}>All Systems Operational</div>
+        </div>
+        <div style={{ marginTop: 'var(--space-4)', padding: 'var(--space-3)' }}>
+          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white', marginBottom: '2px' }}>Need Help?</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--severity-3)' }}>Emergency Support</div>
+          <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>+91 98765 43210</div>
         </div>
       </div>
-    </nav>
+    </aside>
+  );
+}
+
+function SidebarItem({ icon, label, path, currentPath, onClick }) {
+  const active = currentPath === path;
+  return (
+    <button onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: '12px',
+      padding: '10px 16px',
+      background: active ? 'rgba(55, 138, 221, 0.1)' : 'transparent',
+      border: 'none',
+      borderLeft: `3px solid ${active ? 'var(--severity-info)' : 'transparent'}`,
+      color: active ? 'white' : 'var(--text-secondary)',
+      cursor: 'pointer',
+      textAlign: 'left',
+      borderRadius: '4px',
+      fontWeight: active ? 600 : 500,
+      fontSize: '0.875rem'
+    }}>
+      <span>{icon}</span>
+      {label}
+    </button>
   );
 }

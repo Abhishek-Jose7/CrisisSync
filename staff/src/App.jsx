@@ -4,6 +4,7 @@ import { Login } from './pages/Login';
 import { ZoneHome } from './pages/ZoneHome';
 import { Incident } from './pages/Incident';
 import { MapView } from './pages/MapView';
+import { PlaceholderView } from './pages/PlaceholderView';
 import { BottomNav } from './components/BottomNav';
 import './index.css';
 
@@ -22,6 +23,9 @@ function MainApp() {
         <Route path="/" element={<RequireAuth><ZoneHome /></RequireAuth>} />
         <Route path="/incident" element={<RequireAuth><Incident /></RequireAuth>} />
         <Route path="/map" element={<RequireAuth><MapView /></RequireAuth>} />
+        <Route path="/comms" element={<RequireAuth><PlaceholderView title="Communications" icon="💬" description="Secure warden broadcast channel" /></RequireAuth>} />
+        <Route path="/contacts" element={<RequireAuth><PlaceholderView title="Contacts" icon="👥" description="Emergency personnel directory" /></RequireAuth>} />
+        <Route path="/resources" element={<RequireAuth><PlaceholderView title="Resources" icon="📄" description="Floor blueprints and safety protocols" /></RequireAuth>} />
       </Routes>
       {state.staffUser && <BottomNav />}
     </div>
