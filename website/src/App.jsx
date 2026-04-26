@@ -11,6 +11,7 @@ import { GuestAccess } from './pages/GuestAccess';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import './index.css';
+import './enterprise.css';
 
 function App() {
   return (

@@ -88,6 +88,15 @@ function reducer(state, action) {
       };
     case 'SEND_SOS':
       return { ...state, sosSent: true, sosUrgency: action.payload };
+    case 'SEND_DETAILED_SOS':
+      return { 
+        ...state, 
+        sosSent: true, 
+        sosDetails: action.payload,
+        // Trigger incident if high urgency
+        activeIncident: action.payload.urgency === 'high' ? action.payload.crisisType : state.activeIncident,
+        severityLevel: action.payload.urgency === 'high' ? 3 : state.severityLevel
+      };
     case 'RESOLVE_INCIDENT':
       return { ...state, activeIncident: null, severityLevel: null, broadcastMessage: null, sosSent: false };
     default:
@@ -102,6 +111,7 @@ export function GuestDemoProvider({ children, mode = 'main' }) {
     startSession: (token) => dispatch({ type: 'START_SESSION', payload: token }),
     triggerIncident: () => dispatch({ type: 'TRIGGER_INCIDENT' }),
     sendSos: (urgency) => dispatch({ type: 'SEND_SOS', payload: urgency }),
+    sendDetailedSos: (details) => dispatch({ type: 'SEND_DETAILED_SOS', payload: details }),
     resolveIncident: () => dispatch({ type: 'RESOLVE_INCIDENT' })
   }), []);
 

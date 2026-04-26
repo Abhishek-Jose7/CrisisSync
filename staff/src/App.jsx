@@ -8,9 +8,33 @@ import { MapView } from './pages/MapView';
 import { PlaceholderView } from './pages/PlaceholderView';
 import { BottomNav } from './components/BottomNav';
 import './index.css';
+import './field-response.css';
 
-function RequireAuth({ children, basePath = '', requireProfile = true }) {
-  const { state } = useStaffDemo();
+function RequireAuth({ children, basePath = '', requireProfile = true, demoMode = false }) {
+  const { state, actions } = useStaffDemo();
+  
+  // Bypass authentication in demo mode
+  if (demoMode) {
+    if (!state.staffUser) {
+      // Auto-login with demo user
+      actions.login({
+        uid: 'demo-staff-001',
+        email: 'demo@staff.com',
+        displayName: 'Demo Staff Member',
+      });
+    }
+    if (requireProfile && !state.staffUser?.profileComplete) {
+      // Auto-complete onboarding for demo
+      actions.completeOnboarding({
+        name: 'Demo Staff Member',
+        role: 'warden',
+        assignedZoneId: 'zone-floor7',
+        currentShift: 'evening',
+      });
+    }
+    return children;
+  }
+  
   if (!state.staffUser) return <Navigate to={`${basePath}/login`} replace />;
   if (requireProfile && !state.staffUser.profileComplete) return <Navigate to={`${basePath}/onboarding`} replace />;
   return children;
@@ -22,13 +46,13 @@ function AppRoutes({ basePath = '', demoMode = false }) {
     <div className="app-layout">
       <Routes>
         <Route path="login" element={<Login basePath={basePath} />} />
-        <Route path="onboarding" element={<RequireAuth basePath={basePath} requireProfile={false}><StaffOnboarding basePath={basePath} /></RequireAuth>} />
-        <Route index element={<RequireAuth basePath={basePath}><ZoneHome demoMode={demoMode} /></RequireAuth>} />
-        <Route path="incident" element={<RequireAuth basePath={basePath}><Incident /></RequireAuth>} />
-        <Route path="map" element={<RequireAuth basePath={basePath}><MapView /></RequireAuth>} />
-        <Route path="comms" element={<RequireAuth basePath={basePath}><PlaceholderView title="Communications" icon="💬" description="Secure warden broadcast channel" /></RequireAuth>} />
-        <Route path="contacts" element={<RequireAuth basePath={basePath}><PlaceholderView title="Contacts" icon="👥" description="Emergency personnel directory" /></RequireAuth>} />
-        <Route path="resources" element={<RequireAuth basePath={basePath}><PlaceholderView title="Resources" icon="📄" description="Floor blueprints and safety protocols" /></RequireAuth>} />
+        <Route path="onboarding" element={<RequireAuth basePath={basePath} requireProfile={false} demoMode={demoMode}><StaffOnboarding basePath={basePath} /></RequireAuth>} />
+        <Route index element={<RequireAuth basePath={basePath} demoMode={demoMode}><ZoneHome demoMode={demoMode} /></RequireAuth>} />
+        <Route path="incident" element={<RequireAuth basePath={basePath} demoMode={demoMode}><Incident /></RequireAuth>} />
+        <Route path="map" element={<RequireAuth basePath={basePath} demoMode={demoMode}><MapView /></RequireAuth>} />
+        <Route path="comms" element={<RequireAuth basePath={basePath} demoMode={demoMode}><PlaceholderView title="Communications" icon="💬" description="Secure warden broadcast channel" /></RequireAuth>} />
+        <Route path="contacts" element={<RequireAuth basePath={basePath} demoMode={demoMode}><PlaceholderView title="Contacts" icon="👥" description="Emergency personnel directory" /></RequireAuth>} />
+        <Route path="resources" element={<RequireAuth basePath={basePath} demoMode={demoMode}><PlaceholderView title="Resources" icon="📄" description="Floor blueprints and safety protocols" /></RequireAuth>} />
       </Routes>
       {state.staffUser?.profileComplete && <BottomNav basePath={basePath} />}
     </div>

@@ -6,6 +6,7 @@ import { PlaceholderView } from './pages/PlaceholderView';
 import { DemoProvider } from './context/DemoContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AuthContext';
 import './index.css';
+import './tactical.css';
 
 import { AppLayout } from './components/AppLayout';
 import { OnboardingPage } from './pages/Onboarding';

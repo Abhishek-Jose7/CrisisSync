@@ -20,7 +20,7 @@ export const roleLinks = {
   },
   guest: {
     label: 'Guest',
-    production: `${appUrls.guest}/demo/floor7-ghi789`,
+    production: `${appUrls.guest}/scan`,
     demo: `${appUrls.guest}/demo/floor7-ghi789`,
   },
 };

@@ -1,0 +1,871 @@
+/* Field Response Tool - Staff PWA */
+
+/* Field Response Typography */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Roboto:wght@400;500;700;900&display=swap');
+
+:root {
+  /* Field Response Color Palette - High Contrast */
+  --field-bg-primary: #000000;              /* Pure black background */
+  --field-bg-secondary: #1a1a1a;            /* Dark surfaces */
+  --field-bg-tertiary: #333333;             /* Interactive elements */
+  --field-bg-quaternary: #4d4d4d;           /* Hover states */
+  
+  --field-text-primary: #ffffff;            /* Pure white text */
+  --field-text-secondary: #cccccc;          /* Secondary text */
+  --field-text-muted: #999999;              /* Muted text */
+  --field-text-inverse: #000000;            /* Text on colored backgrounds */
+  
+  /* Field Response Status Colors - High Visibility */
+  --field-critical: #ff0000;                /* Critical - pure red */
+  --field-warning: #ff9900;                 /* Warning - bright orange */
+  --field-success: #00ff00;                 /* Success - pure green */
+  --field-info: #0099ff;                    /* Info - bright blue */
+  --field-neutral: #cccccc;                 /* Neutral status */
+  
+  /* Field Response Emergency Colors */
+  --field-emergency-bg: #ff0000;            /* Emergency button background */
+  --field-emergency-text: #ffffff;          /* Emergency button text */
+  --field-evacuation-bg: #ff6600;           /* Evacuation background */
+  --field-evacuation-text: #ffffff;         /* Evacuation text */
+  --field-safe-bg: #00cc00;                 /* Safe status background */
+  --field-safe-text: #000000;               /* Safe status text */
+  
+  /* Field Response Typography */
+  --font-mono: 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+  --font-sans: 'Roboto', system-ui, sans-serif;
+  
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 2rem;       /* 32px */
+  --text-4xl: 2.5rem;     /* 40px */
+  --text-5xl: 3rem;       /* 48px */
+  
+  /* Field Response Spacing - Large for touch */
+  --space-1: 0.25rem;     /* 4px */
+  --space-2: 0.5rem;      /* 8px */
+  --space-3: 0.75rem;     /* 12px */
+  --space-4: 1rem;        /* 16px */
+  --space-5: 1.25rem;     /* 20px */
+  --space-6: 1.5rem;      /* 24px */
+  --space-8: 2rem;        /* 32px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-12: 3rem;       /* 48px */
+  --space-16: 4rem;       /* 64px */
+  --space-20: 5rem;       /* 80px */
+  
+  /* Field Response Borders - High Contrast */
+  --border-subtle: 1px solid #333333;
+  --border-default: 2px solid #666666;
+  --border-strong: 3px solid #999999;
+  --border-critical: 3px solid var(--field-critical);
+  --border-warning: 3px solid var(--field-warning);
+  --border-success: 3px solid var(--field-success);
+  --border-info: 3px solid var(--field-info);
+  
+  /* Field Response Shadows - Minimal for clarity */
+  --shadow-subtle: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.6);
+  --shadow-strong: 0 8px 16px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 20px rgba(255, 0, 0, 0.5);
+  
+  /* Field Response Radius - Minimal for durability */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  /* Field Response Touch Targets - Large and accessible */
+  --touch-target-small: 44px;   /* Minimum touch target */
+  --touch-target-medium: 56px;  /* Medium touch target */
+  --touch-target-large: 72px;   /* Large touch target */
+  --touch-target-xlarge: 88px;  /* Extra large touch target */
+  
+  /* Field Response Transitions - Fast and responsive */
+  --transition-fast: 0.1s ease;
+  --transition-medium: 0.2s ease;
+}
+
+/* Field Response Base Styles */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--field-bg-primary);
+  color: var(--field-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* Field Response Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--field-text-primary);
+  margin: 0;
+}
+
+h1 { font-size: var(--text-4xl); font-weight: 900; }
+h2 { font-size: var(--text-3xl); font-weight: 800; }
+h3 { font-size: var(--text-2xl); font-weight: 700; }
+h4 { font-size: var(--text-xl); font-weight: 700; }
+h5 { font-size: var(--text-lg); font-weight: 600; }
+h6 { font-size: var(--text-base); font-weight: 600; }
+
+.field-mono {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+/* Field Response Layout */
+.field-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--field-bg-primary);
+  overflow: hidden;
+}
+
+.field-header {
+  background: var(--field-bg-secondary);
+  border-bottom: var(--border-default);
+  padding: var(--space-4);
+  flex-shrink: 0;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.field-footer {
+  background: var(--field-bg-secondary);
+  border-top: var(--border-default);
+  padding: var(--space-4);
+  flex-shrink: 0;
+  min-height: 100px;
+}
+
+/* Field Response Header */
+.field-header-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--field-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.field-header-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.field-status-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--field-success);
+  border: 3px solid var(--field-text-primary);
+  box-shadow: 0 0 10px var(--field-success);
+}
+
+.field-status-indicator.warning {
+  background: var(--field-warning);
+  box-shadow: 0 0 10px var(--field-warning);
+}
+
+.field-status-indicator.critical {
+  background: var(--field-critical);
+  box-shadow: 0 0 10px var(--field-critical);
+  animation: field-pulse 1s infinite;
+}
+
+@keyframes field-pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: scale(1.1);
+  }
+}
+
+.field-status-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--field-text-primary);
+}
+
+/* Field Response Cards */
+.field-card {
+  background: var(--field-bg-secondary);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+}
+
+.field-card-header {
+  margin-bottom: var(--space-4);
+  border-bottom: var(--border-subtle);
+  padding-bottom: var(--space-4);
+}
+
+.field-card-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--field-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-bottom: var(--space-2);
+}
+
+.field-card-subtitle {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--field-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Field Response Emergency Actions */
+.field-emergency-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.field-emergency-btn {
+  min-height: var(--touch-target-xlarge);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border: var(--border-strong);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.field-emergency-btn:active {
+  transform: scale(0.95);
+}
+
+.field-emergency-btn.critical {
+  background: var(--field-emergency-bg);
+  color: var(--field-emergency-text);
+  border-color: var(--field-critical);
+  box-shadow: var(--shadow-glow);
+}
+
+.field-emergency-btn.critical:hover {
+  background: #cc0000;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+}
+
+.field-emergency-btn.warning {
+  background: var(--field-evacuation-bg);
+  color: var(--field-evacuation-text);
+  border-color: var(--field-warning);
+}
+
+.field-emergency-btn.warning:hover {
+  background: #ff5200;
+}
+
+.field-emergency-btn.success {
+  background: var(--field-safe-bg);
+  color: var(--field-safe-text);
+  border-color: var(--field-success);
+}
+
+.field-emergency-btn.success:hover {
+  background: #00ff00;
+}
+
+.field-emergency-btn-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* Field Response Checklist */
+.field-checklist {
+  background: var(--field-bg-secondary);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+}
+
+.field-checklist-header {
+  margin-bottom: var(--space-4);
+  border-bottom: var(--border-subtle);
+  padding-bottom: var(--space-4);
+}
+
+.field-checklist-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--field-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.field-checklist-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.field-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--field-bg-tertiary);
+  border: var(--border-subtle);
+  border-radius: var(--radius);
+  min-height: var(--touch-target-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.field-checklist-item:hover {
+  background: var(--field-bg-quaternary);
+  border-color: var(--border-default);
+}
+
+.field-checklist-item.completed {
+  background: var(--field-safe-bg);
+  border-color: var(--field-success);
+}
+
+.field-checklist-item.completed .field-checklist-text {
+  color: var(--field-safe-text);
+  text-decoration: line-through;
+}
+
+.field-checklist-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--field-text-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--field-safe-text);
+}
+
+.field-checklist-item.completed .field-checklist-checkbox {
+  background: var(--field-success);
+  border-color: var(--field-success);
+}
+
+.field-checklist-content {
+  flex: 1;
+}
+
+.field-checklist-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--field-text-primary);
+  line-height: 1.4;
+}
+
+.field-checklist-priority {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--field-text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* Field Response Zone Status */
+.field-zone-status {
+  background: var(--field-bg-secondary);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+}
+
+.field-zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  border-bottom: var(--border-subtle);
+  padding-bottom: var(--space-4);
+}
+
+.field-zone-name {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--field-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.field-zone-badge {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-2) var(--space-3);
+  background: var(--field-bg-tertiary);
+  color: var(--field-text-primary);
+  border: var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.field-zone-badge.critical {
+  background: var(--field-critical);
+  color: var(--field-emergency-text);
+  border-color: var(--field-critical);
+}
+
+.field-zone-badge.warning {
+  background: var(--field-warning);
+  color: var(--field-text-inverse);
+  border-color: var(--field-warning);
+}
+
+.field-zone-badge.safe {
+  background: var(--field-success);
+  color: var(--field-safe-text);
+  border-color: var(--field-success);
+}
+
+.field-zone-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.field-zone-metric {
+  text-align: center;
+  padding: var(--space-4);
+  background: var(--field-bg-tertiary);
+  border: var(--border-subtle);
+  border-radius: var(--radius);
+}
+
+.field-zone-metric-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--field-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.field-zone-metric-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--field-text-secondary);
+}
+
+/* Field Response Status Updates */
+.field-status-updates {
+  background: var(--field-bg-secondary);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+}
+
+.field-status-header {
+  margin-bottom: var(--space-4);
+  border-bottom: var(--border-subtle);
+  padding-bottom: var(--space-4);
+}
+
+.field-status-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--field-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.field-status-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.field-status-btn {
+  min-height: var(--touch-target-large);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border: var(--border-default);
+  border-radius: var(--radius);
+  background: var(--field-bg-tertiary);
+  color: var(--field-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.field-status-btn:hover {
+  background: var(--field-bg-quaternary);
+  border-color: var(--border-strong);
+}
+
+.field-status-btn:active {
+  transform: scale(0.95);
+}
+
+.field-status-btn.critical {
+  background: var(--field-critical);
+  color: var(--field-emergency-text);
+  border-color: var(--field-critical);
+}
+
+.field-status-btn.warning {
+  background: var(--field-warning);
+  color: var(--field-text-inverse);
+  border-color: var(--field-warning);
+}
+
+.field-status-btn.success {
+  background: var(--field-success);
+  color: var(--field-safe-text);
+  border-color: var(--field-success);
+}
+
+/* Field Response Alert Feed */
+.field-alert-feed {
+  background: var(--field-bg-secondary);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.field-alert-header {
+  margin-bottom: var(--space-4);
+  border-bottom: var(--border-subtle);
+  padding-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-alert-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--field-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.field-alert-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--field-critical);
+  background: var(--field-bg-tertiary);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.field-alert-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.field-alert-item {
+  padding: var(--space-4);
+  background: var(--field-bg-tertiary);
+  border: var(--border-subtle);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--field-info);
+}
+
+.field-alert-item.critical {
+  border-left-color: var(--field-critical);
+  background: rgba(255, 0, 0, 0.1);
+}
+
+.field-alert-item.warning {
+  border-left-color: var(--field-warning);
+  background: rgba(255, 153, 0, 0.1);
+}
+
+.field-alert-type {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--field-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.field-alert-content {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--field-text-secondary);
+  line-height: 1.4;
+}
+
+.field-alert-time {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--field-text-muted);
+  margin-top: var(--space-2);
+}
+
+/* Field Response Footer Actions */
+.field-footer-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  height: 100%;
+}
+
+.field-footer-btn {
+  min-height: var(--touch-target-large);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border: var(--border-default);
+  border-radius: var(--radius);
+  background: var(--field-bg-tertiary);
+  color: var(--field-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.field-footer-btn:hover {
+  background: var(--field-bg-quaternary);
+  border-color: var(--border-strong);
+}
+
+.field-footer-btn:active {
+  transform: scale(0.95);
+}
+
+.field-footer-btn-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* Field Response Emergency Mode */
+.field-emergency-mode {
+  background: var(--field-critical);
+  color: var(--field-emergency-text);
+  animation: field-emergency-flash 2s infinite;
+}
+
+@keyframes field-emergency-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.field-emergency-mode .field-header {
+  background: #990000;
+  border-color: var(--field-critical);
+}
+
+.field-emergency-mode .field-footer {
+  background: #990000;
+  border-color: var(--field-critical);
+}
+
+.field-emergency-mode .field-card {
+  background: #990000;
+  border-color: var(--field-critical);
+}
+
+.field-emergency-mode .field-checklist {
+  background: #990000;
+  border-color: var(--field-critical);
+}
+
+/* Responsive Field Layout */
+@media (max-width: 768px) {
+  .field-main {
+    padding: var(--space-3);
+    gap: var(--space-4);
+  }
+  
+  .field-header {
+    padding: var(--space-3);
+    min-height: 70px;
+  }
+  
+  .field-footer {
+    padding: var(--space-3);
+    min-height: 80px;
+  }
+  
+  .field-emergency-btn {
+    min-height: var(--touch-target-large);
+    font-size: var(--text-lg);
+  }
+  
+  .field-zone-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .field-status-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  .field-footer-actions {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+  
+  .field-footer-btn {
+    min-height: var(--touch-target-medium);
+    font-size: var(--text-xs);
+  }
+  
+  .field-footer-btn-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .field-header-title {
+    font-size: var(--text-lg);
+  }
+  
+  .field-emergency-btn {
+    min-height: var(--touch-target-medium);
+    font-size: var(--text-base);
+  }
+  
+  .field-emergency-btn-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .field-zone-metric-value {
+    font-size: var(--text-2xl);
+  }
+  
+  .field-footer-actions {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-1);
+  }
+}
+
+/* Field Response Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-black { font-weight: 900; }
+
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+
+.text-primary { color: var(--field-text-primary); }
+.text-secondary { color: var(--field-text-secondary); }
+.text-muted { color: var(--field-text-muted); }
+.text-critical { color: var(--field-critical); }
+.text-warning { color: var(--field-warning); }
+.text-success { color: var(--field-success); }
+.text-info { color: var(--field-info); }
+
+.bg-primary { background: var(--field-bg-primary); }
+.bg-secondary { background: var(--field-bg-secondary); }
+.bg-tertiary { background: var(--field-bg-tertiary); }
+
+.mb-0 { margin-bottom: 0; }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+
+.mt-0 { margin-top: 0; }
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }

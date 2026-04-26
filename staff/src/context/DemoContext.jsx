@@ -28,7 +28,9 @@ const BASE_STATE = {
   allZoneStatuses: {
     'zone-floor7': { statusLabel: 'notified' },
     'zone-lobby': { statusLabel: 'acknowledged' }
-  }
+  },
+  alertFeed: [],
+  timeline: []
 };
 
 const storageKey = (mode, uid) => `crisissync:staff:${mode}:profile:${uid}`;
@@ -70,7 +72,34 @@ function reducer(state, action) {
         }
       };
     case 'CLEAR_INCIDENT':
-      return { ...state, activeIncident: null, completedTaskIds: [], zoneStatus: 'clear' };
+      return { ...state, activeIncident: null, completedTaskIds: [], zoneStatus: 'clear', alertFeed: [], timeline: [] };
+    case 'ADD_SOS': {
+      const { zoneId, crisisType, urgency, affectedCount } = action.payload;
+      const zone = state.zones.find(z => z.zoneId === zoneId);
+      const sos = {
+        sosId: `sos-${Math.random().toString(36).slice(2, 11)}`,
+        zoneId,
+        crisisType,
+        urgency,
+        affectedCount,
+        timestamp: new Date(),
+        guestSessionId: `session-${Math.random().toString(36).slice(2, 11)}`,
+      };
+
+      const timelineEntry = {
+        eventId: Math.random().toString(36).slice(2, 11),
+        eventType: 'sos_received',
+        actor: 'guest',
+        description: `Guest SOS from ${zone?.name || zoneId}: ${crisisType}, urgency: ${urgency}, affected: ${affectedCount}`,
+        timestamp: new Date(),
+      };
+
+      return {
+        ...state,
+        alertFeed: [sos, ...state.alertFeed],
+        timeline: [timelineEntry, ...state.timeline],
+      };
+    }
     default:
       return state;
   }
@@ -108,11 +137,15 @@ export function StaffDemoProvider({ children, mode = 'main' }) {
       if (!savedProfile) return false;
       return Boolean(JSON.parse(savedProfile).profileComplete);
     },
-    logout: () => dispatch({ type: 'LOGOUT' }),
+    logout: () => {
+      localStorage.removeItem(storageKey(mode, state.staffUser?.uid));
+      dispatch({ type: 'LOGOUT' });
+    },
     setIncident: (sys) => dispatch({ type: 'SET_INCIDENT', payload: sys }),
     markTask: (id) => dispatch({ type: 'MARK_TASK', payload: id }),
     updateStatus: (status) => dispatch({ type: 'UPDATE_STATUS', payload: status }),
-    clearIncident: () => dispatch({ type: 'CLEAR_INCIDENT' })
+    clearIncident: () => dispatch({ type: 'CLEAR_INCIDENT' }),
+    addSOS: (payload) => dispatch({ type: 'ADD_SOS', payload })
   }), [mode, state.staffUser]);
 
   return (

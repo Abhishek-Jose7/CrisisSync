@@ -1,0 +1,854 @@
+/* Emergency Safety Card - Guest PWA */
+
+/* Safety Card Typography */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Open+Sans+Condensed:wght@300;700&display=swap');
+
+:root {
+  /* Safety Card Color Palette - Calm & Clear */
+  --safety-bg-primary: #faf8f5;            /* Warm light background */
+  --safety-bg-secondary: #f5f2ed;          /* Soft card backgrounds */
+  --safety-bg-tertiary: #ede8e0;           /* Interactive elements */
+  --safety-bg-quaternary: #e4dfd5;         /* Hover states */
+  
+  --safety-text-primary: #2c2c2c;          /* Warm dark text */
+  --safety-text-secondary: #5a5a5a;        /* Secondary text */
+  --safety-text-muted: #8a8a8a;            /* Muted text */
+  --safety-text-inverse: #ffffff;          /* Text on colored backgrounds */
+  
+  /* Safety Card Emergency Colors */
+  --safety-emergency: #dc2626;             /* Emergency red - not too bright */
+  --safety-warning: #ea580c;               /* Warning orange */
+  --safety-evacuation: #ca8a04;            /* Evacuation amber */
+  --safety-safe: #16a34a;                  /* Safe green */
+  --safety-info: #2563eb;                  /* Information blue */
+  --safety-neutral: #6b7280;               /* Neutral gray */
+  
+  /* Safety Card Status Colors */
+  --safety-status-clear: #16a34a;          /* Clear status */
+  --safety-status-warning: #ea580c;        /* Warning status */
+  --safety-status-emergency: #dc2626;      /* Emergency status */
+  
+  /* Safety Card Typography */
+  --font-primary: 'Open Sans', system-ui, sans-serif;
+  --font-condensed: 'Open Sans Condensed', 'Open Sans', sans-serif;
+  
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+  
+  /* Safety Card Spacing - Generous and calm */
+  --space-1: 0.25rem;     /* 4px */
+  --space-2: 0.5rem;      /* 8px */
+  --space-3: 0.75rem;     /* 12px */
+  --space-4: 1rem;        /* 16px */
+  --space-5: 1.25rem;     /* 20px */
+  --space-6: 1.5rem;      /* 24px */
+  --space-8: 2rem;        /* 32px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-12: 3rem;       /* 48px */
+  --space-16: 4rem;       /* 64px */
+  --space-20: 5rem;       /* 80px */
+  
+  /* Safety Card Borders - Soft and subtle */
+  --border-subtle: 1px solid rgba(44, 44, 44, 0.08);
+  --border-default: 1px solid rgba(44, 44, 44, 0.12);
+  --border-medium: 1px solid rgba(44, 44, 44, 0.16);
+  --border-strong: 2px solid rgba(44, 44, 44, 0.2);
+  --border-emergency: 2px solid var(--safety-emergency);
+  --border-warning: 2px solid var(--safety-warning);
+  --border-safe: 2px solid var(--safety-safe);
+  
+  /* Safety Card Shadows - Soft and gentle */
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-gentle: 0 8px 24px rgba(0, 0, 0, 0.12);
+  
+  /* Safety Card Radius - Rounded and friendly */
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius: 0.5rem;        /* 8px */
+  --radius-md: 0.75rem;    /* 12px */
+  --radius-lg: 1rem;       /* 16px */
+  --radius-xl: 1.5rem;     /* 24px */
+  --radius-2xl: 2rem;      /* 32px */
+  
+  /* Safety Card Touch Targets - Large and accessible */
+  --touch-target-small: 48px;   /* Minimum touch target */
+  --touch-target-medium: 56px;  /* Medium touch target */
+  --touch-target-large: 64px;   /* Large touch target */
+  --touch-target-xlarge: 80px;  /* Extra large for emergency */
+  
+  /* Safety Card Transitions - Smooth and calming */
+  --transition-gentle: 0.3s ease;
+  --transition-smooth: 0.4s ease;
+  --transition-calm: 0.5s ease;
+}
+
+/* Safety Card Base Styles */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(220, 38, 38, 0.1);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--safety-bg-primary);
+  color: var(--safety-text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Safety Card Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--safety-text-primary);
+  margin: 0;
+}
+
+h1 { font-size: var(--text-4xl); font-weight: 700; }
+h2 { font-size: var(--text-3xl); font-weight: 600; }
+h3 { font-size: var(--text-2xl); font-weight: 600; }
+h4 { font-size: var(--text-xl); font-weight: 600; }
+h5 { font-size: var(--text-lg); font-weight: 600; }
+h6 { font-size: var(--text-base); font-weight: 600; }
+
+.safety-condensed {
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+/* Safety Card Layout */
+.safety-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--safety-bg-primary);
+}
+
+.safety-header {
+  background: white;
+  border-bottom: var(--border-default);
+  padding: var(--space-6) var(--space-8);
+  flex-shrink: 0;
+}
+
+.safety-main {
+  flex: 1;
+  padding: var(--space-8);
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.safety-footer {
+  background: white;
+  border-top: var(--border-default);
+  padding: var(--space-6) var(--space-8);
+  flex-shrink: 0;
+}
+
+/* Safety Card Header */
+.safety-header-content {
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.safety-venue-name {
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--safety-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+}
+
+.safety-zone-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  color: var(--safety-text-secondary);
+}
+
+.safety-zone-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--safety-safe);
+}
+
+.safety-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--safety-safe);
+  color: var(--safety-text-inverse);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-top: var(--space-4);
+}
+
+.safety-status-indicator.warning {
+  background: var(--safety-warning);
+}
+
+.safety-status-indicator.emergency {
+  background: var(--safety-emergency);
+  animation: safety-pulse 2s infinite;
+}
+
+@keyframes safety-pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.02);
+  }
+}
+
+/* Safety Card Welcome Section */
+.safety-welcome {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.safety-welcome-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-4);
+  color: var(--safety-safe);
+}
+
+.safety-welcome-title {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--safety-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.safety-welcome-message {
+  font-size: var(--text-lg);
+  color: var(--safety-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-6);
+}
+
+/* Safety Card Emergency Button */
+.safety-emergency-section {
+  margin-bottom: var(--space-8);
+}
+
+.safety-emergency-btn {
+  width: 100%;
+  min-height: var(--touch-target-xlarge);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: var(--safety-emergency);
+  color: var(--safety-text-inverse);
+  border: none;
+  border-radius: var(--radius-2xl);
+  font-family: var(--font-condensed);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all var(--transition-gentle);
+  box-shadow: var(--shadow-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+.safety-emergency-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.safety-emergency-btn:hover::before {
+  left: 100%;
+}
+
+.safety-emergency-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gentle);
+}
+
+.safety-emergency-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-medium);
+}
+
+.safety-emergency-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.safety-emergency-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.safety-emergency-label {
+  font-size: var(--text-xl);
+}
+
+.safety-emergency-sublabel {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  opacity: 0.9;
+  font-family: var(--font-primary);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* Safety Card Information Cards */
+.safety-info-grid {
+  display: grid;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.safety-info-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-gentle);
+  cursor: pointer;
+  border: var(--border-default);
+}
+
+.safety-info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gentle);
+  border-color: var(--border-medium);
+}
+
+.safety-info-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.safety-info-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: var(--safety-info);
+}
+
+.safety-info-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--safety-text-primary);
+}
+
+.safety-info-content {
+  color: var(--safety-text-secondary);
+  line-height: 1.6;
+}
+
+.safety-info-action {
+  margin-top: var(--space-4);
+  color: var(--safety-info);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+/* Safety Card Exit Routes */
+.safety-exit-section {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-soft);
+}
+
+.safety-exit-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.safety-exit-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--safety-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.safety-exit-subtitle {
+  color: var(--safety-text-secondary);
+  font-size: var(--text-lg);
+}
+
+.safety-exit-map {
+  background: var(--safety-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-medium);
+}
+
+.safety-exit-placeholder {
+  text-align: center;
+  color: var(--safety-text-muted);
+}
+
+.safety-exit-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.safety-exit-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--safety-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: var(--border-subtle);
+}
+
+.safety-exit-number {
+  width: 32px;
+  height: 32px;
+  background: var(--safety-info);
+  color: var(--safety-text-inverse);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.safety-exit-text {
+  flex: 1;
+  color: var(--safety-text-primary);
+  line-height: 1.5;
+}
+
+/* Safety Card Contacts */
+.safety-contacts-section {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-soft);
+}
+
+.safety-contacts-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.safety-contacts-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--safety-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.safety-contacts-subtitle {
+  color: var(--safety-text-secondary);
+  font-size: var(--text-lg);
+}
+
+.safety-contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.safety-contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background: var(--safety-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: var(--border-subtle);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition-gentle);
+}
+
+.safety-contact-item:hover {
+  background: var(--safety-bg-tertiary);
+  border-color: var(--border-default);
+}
+
+.safety-contact-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.safety-contact-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--safety-info);
+  flex-shrink: 0;
+}
+
+.safety-contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.safety-contact-name {
+  font-weight: 600;
+  color: var(--safety-text-primary);
+}
+
+.safety-contact-number {
+  font-size: var(--text-sm);
+  color: var(--safety-text-secondary);
+}
+
+.safety-contact-action {
+  color: var(--safety-info);
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+/* Safety Card Emergency Mode */
+.safety-emergency-mode {
+  background: #fef2f2;
+  color: var(--safety-emergency);
+}
+
+.safety-emergency-mode .safety-header {
+  background: #fee2e2;
+  border-color: var(--safety-emergency);
+}
+
+.safety-emergency-mode .safety-footer {
+  background: #fee2e2;
+  border-color: var(--safety-emergency);
+}
+
+.safety-emergency-mode .safety-welcome {
+  background: #fee2e2;
+  border-color: var(--safety-emergency);
+}
+
+.safety-emergency-mode .safety-info-card {
+  background: #fee2e2;
+  border-color: var(--safety-emergency);
+}
+
+.safety-emergency-mode .safety-exit-section {
+  background: #fee2e2;
+  border-color: var(--safety-emergency);
+}
+
+.safety-emergency-mode .safety-contacts-section {
+  background: #fee2e2;
+  border-color: var(--safety-emergency);
+}
+
+.safety-emergency-banner {
+  background: var(--safety-emergency);
+  color: var(--safety-text-inverse);
+  padding: var(--space-4);
+  text-align: center;
+  font-family: var(--font-condensed);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-6);
+  border-radius: var(--radius-lg);
+}
+
+.safety-emergency-instructions {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-soft);
+  border: var(--border-emergency);
+}
+
+.safety-emergency-title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--safety-emergency);
+  text-align: center;
+  margin-bottom: var(--space-6);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.safety-emergency-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.safety-emergency-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.safety-emergency-step-number {
+  width: 40px;
+  height: 40px;
+  background: var(--safety-emergency);
+  color: var(--safety-text-inverse);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: var(--text-lg);
+  flex-shrink: 0;
+}
+
+.safety-emergency-step-content {
+  flex: 1;
+}
+
+.safety-emergency-step-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--safety-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.safety-emergency-step-description {
+  color: var(--safety-text-secondary);
+  line-height: 1.6;
+  font-size: var(--text-lg);
+}
+
+/* Safety Card Footer */
+.safety-footer-content {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+}
+
+.safety-footer-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--safety-text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: color var(--transition-gentle);
+}
+
+.safety-footer-link:hover {
+  color: var(--safety-info);
+}
+
+.safety-footer-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive Safety Card */
+@media (max-width: 768px) {
+  .safety-main {
+    padding: var(--space-6);
+  }
+  
+  .safety-header {
+    padding: var(--space-4) var(--space-6);
+  }
+  
+  .safety-footer {
+    padding: var(--space-4) var(--space-6);
+  }
+  
+  .safety-welcome {
+    padding: var(--space-6);
+  }
+  
+  .safety-welcome-title {
+    font-size: var(--text-2xl);
+  }
+  
+  .safety-emergency-btn {
+    min-height: var(--touch-target-large);
+    font-size: var(--text-xl);
+  }
+  
+  .safety-emergency-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .safety-info-card {
+    padding: var(--space-4);
+  }
+  
+  .safety-exit-section {
+    padding: var(--space-6);
+  }
+  
+  .safety-contacts-section {
+    padding: var(--space-6);
+  }
+  
+  .safety-footer-content {
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 480px) {
+  .safety-main {
+    padding: var(--space-4);
+  }
+  
+  .safety-header {
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .safety-footer {
+    padding: var(--space-3) var(--space-4);
+  }
+  
+  .safety-venue-name {
+    font-size: var(--text-xl);
+  }
+  
+  .safety-welcome {
+    padding: var(--space-4);
+  }
+  
+  .safety-welcome-title {
+    font-size: var(--text-xl);
+  }
+  
+  .safety-welcome-message {
+    font-size: var(--text-base);
+  }
+  
+  .safety-emergency-btn {
+    min-height: var(--touch-target-medium);
+    font-size: var(--text-lg);
+    padding: var(--space-4);
+  }
+  
+  .safety-emergency-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .safety-emergency-label {
+    font-size: var(--text-lg);
+  }
+  
+  .safety-info-card {
+    padding: var(--space-3);
+  }
+  
+  .safety-info-title {
+    font-size: var(--text-lg);
+  }
+  
+  .safety-exit-section,
+  .safety-contacts-section {
+    padding: var(--space-4);
+  }
+  
+  .safety-exit-title,
+  .safety-contacts-title {
+    font-size: var(--text-xl);
+  }
+}
+
+/* Safety Card Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+
+.text-primary { color: var(--safety-text-primary); }
+.text-secondary { color: var(--safety-text-secondary); }
+.text-muted { color: var(--safety-text-muted); }
+.text-emergency { color: var(--safety-emergency); }
+.text-warning { color: var(--safety-warning); }
+.text-safe { color: var(--safety-safe); }
+.text-info { color: var(--safety-info); }
+
+.bg-white { background-color: white; }
+.bg-primary { background-color: var(--safety-bg-primary); }
+.bg-secondary { background-color: var(--safety-bg-secondary); }
+
+.mb-0 { margin-bottom: 0; }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mb-8 { margin-bottom: var(--space-8); }
+
+.mt-0 { margin-top: 0; }
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
