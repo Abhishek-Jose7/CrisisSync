@@ -1,22 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStaffDemo } from '../../context/DemoContext';
-import { InstallAppButton } from '../../components/InstallAppButton';
 import { auth } from '../../../../shared/firebase/config';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export function Login() {
-  const { actions } = useStaffDemo();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  async function handleGoogleLogin(e) {
-    e.preventDefault();
+  async function handleGoogleLogin() {
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-      navigate('/');
+      // After login, ideally we would check firestore if the org exists
+      // If none, navigate to onboarding. Otherwise to command.
+      navigate('/onboarding');
     } catch (error) {
       console.error(error);
       alert('Login failed. Please try again.');
@@ -26,26 +24,23 @@ export function Login() {
   }
 
   return (
-    <div className="main-content" style={{ justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
-        <div style={{ width: 64, height: 64, background: 'var(--severity-3)', borderRadius: 'var(--radius-lg)', margin: '0 auto var(--space-4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '24px' }}>CS</div>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: 'var(--space-2)' }}>Staff Login</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Enter 4-digit PIN to access warden dashboard</p>
-      </div>
-
-      <div style={{ width: '100%', maxWidth: 320 }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-dark)', color: 'white', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: 'var(--bg-card)', padding: 'var(--space-8)', borderRadius: 'var(--radius-lg)', textAlign: 'center', maxWidth: 400, width: '100%' }}>
+        <div style={{ width: 64, height: 64, background: 'var(--severity-info-bg)', color: 'var(--severity-info)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-4)', margin: '0 auto 16px' }}>
+          🛡️
+        </div>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '8px' }}>CrisisSync Admin</h1>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Enterprise Emergency Coordination Platform</p>
+        
         <button 
           onClick={handleGoogleLogin} 
           disabled={loading}
           className="btn btn--primary btn--block"
-          style={{ background: 'white', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          style={{ background: 'white', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', width: '100%', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path fillRule="evenodd" clipRule="evenodd" d="M17.64 9.20455C17.64 8.56636 17.5827 7.95273 17.4764 7.36364H9V10.845H13.8436C13.635 11.97 13.0009 12.9232 12.0477 13.5614V15.8195H14.9564C16.6582 14.2527 17.64 11.9455 17.64 9.20455Z" fill="#4285F4"/><path fillRule="evenodd" clipRule="evenodd" d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5614C11.2418 14.1014 10.2109 14.4205 9 14.4205C6.65591 14.4205 4.67182 12.8373 3.96409 10.71H0.957275V13.0418C2.43818 15.9832 5.48182 18 9 18Z" fill="#34A853"/><path fillRule="evenodd" clipRule="evenodd" d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29H0.957275V4.95818C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957275 13.0418L3.96409 10.71Z" fill="#FBBC05"/><path fillRule="evenodd" clipRule="evenodd" d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/></svg>
-          {loading ? 'Signing in...' : 'Sign in with Google'}
+          {loading ? 'Authenticating...' : 'Sign in with Google'}
         </button>
-        <div style={{ marginTop: '16px' }}>
-          <InstallAppButton />
-        </div>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
 /* ====================================================
    CrisisSync Admin — Tactical Operations Design System
@@ -6,11 +7,11 @@
    ==================================================== */
 
 :root {
-  /* ── Core Surfaces ── */
-  --bg-root: #08080d;
-  --bg-primary: #0a0a0f;
-  --bg-surface: #111118;
-  --bg-elevated: #16161e;
+  /* Colors - Operational Dark Mode */
+  --bg-dark: #09090b;
+  --bg-panel: #18181b;
+  --bg-card: #27272a;
+  --bg-elevated: #3f3f46;
   --bg-overlay: #1c1c26;
   --bg-hover: #22222e;
   --bg-active: #282836;

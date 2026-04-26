@@ -12,15 +12,18 @@ export function Home() {
             The operational central nervous system for hotels, hospitals, and commercial venues.
             Synchronize wardens, automate escalations, and issue precise guest guidance in real-time.
           </p>
-          <div className="hero-actions">
+          <div className="hero-actions" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
             <a href="https://crisis-sync-jovf.vercel.app/onboarding" className="btn btn-primary" style={{ height: '48px', padding: '0 32px' }} target="_blank" rel="noopener noreferrer">
               Start Organization Onboarding
             </a>
             <a href="https://crisis-sync-jovf.vercel.app/demo" className="btn btn-outline" style={{ height: '48px', padding: '0 32px', borderColor: 'var(--accent-brand)', color: 'var(--accent-brand)' }} target="_blank" rel="noopener noreferrer">
-              Interactive Live Demo
+              Admin Ops Demo
             </a>
-            <a href="#sales" className="btn btn-outline" style={{ height: '48px', padding: '0 32px' }}>
-              Contact Sales
+            <a href="https://crisis-sync-usof.vercel.app/demo" className="btn btn-outline" style={{ height: '48px', padding: '0 32px', borderColor: 'var(--accent-brand)', color: 'var(--accent-brand)' }} target="_blank" rel="noopener noreferrer">
+              Staff Warden Demo
+            </a>
+            <a href="https://crisis-sync-7y89.vercel.app/demo" className="btn btn-outline" style={{ height: '48px', padding: '0 32px', borderColor: 'var(--accent-brand)', color: 'var(--accent-brand)' }} target="_blank" rel="noopener noreferrer">
+              Guest SOS Demo
             </a>
           </div>
         </div>

@@ -8,6 +8,7 @@ import './index.css';
 
 import { AppLayout } from './components/AppLayout';
 import { OnboardingPage } from './pages/Onboarding';
+import { Login as AdminLogin } from './pages/Login';
 
 function AppRoutes() {
   return (
@@ -29,6 +30,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Unprotected entry routes */}
+        <Route path="/login" element={<AdminLogin />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         
         {/* Isolated Demo Environment */}
@@ -40,7 +43,7 @@ export default function App() {
           </DemoProvider>
         } />
         
-        {/* Production Environment */}
+        {/* Production Environment defaults to login check conceptually. We leave it open for now just tracking Google Sign in. */}
         <Route path="/*" element={
           <AppLayout>
              <AppRoutes />
