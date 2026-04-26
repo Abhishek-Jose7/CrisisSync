@@ -5,7 +5,13 @@ import { useState } from 'react';
 import { BottomNav } from '../../components/BottomNav';
 
 export function Incident() {
-  const { state, actions } = useStaffDemo();
+  let state = { activeIncident: null };
+  let actions = {};
+  try {
+    const demo = useStaffDemo();
+    state = demo.state;
+    actions = demo.actions;
+  } catch {}
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('tasks');
 

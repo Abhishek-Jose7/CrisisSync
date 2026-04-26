@@ -13,9 +13,9 @@ export function Footer() {
             <div>
               <h4 style={{ fontSize: '0.875rem', marginBottom: 'var(--spacing-4)', color: 'white' }}>Platform</h4>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <a href="http://localhost:5173" className="footer-text" style={{ textDecoration: 'none' }}>Admin Center</a>
-                <a href="http://localhost:5174" className="footer-text" style={{ textDecoration: 'none' }}>Staff PWA</a>
-                <a href="http://localhost:5175" className="footer-text" style={{ textDecoration: 'none' }}>Guest Access Map</a>
+                <a href="https://crisis-sync-jovf.vercel.app/" className="footer-text" style={{ textDecoration: 'none' }}>Admin Center</a>
+                <a href="https://crisis-sync-usof.vercel.app/login" className="footer-text" style={{ textDecoration: 'none' }}>Staff PWA</a>
+                <a href="#guest" className="footer-text" style={{ textDecoration: 'none' }}>Guest Access Map</a>
               </nav>
             </div>
             <div>

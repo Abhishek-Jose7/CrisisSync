@@ -9,13 +9,24 @@ import { BottomNav } from './components/BottomNav';
 import './index.css';
 
 function RequireAuth({ children }) {
-  const { state } = useStaffDemo();
+  let state = { staffUser: null };
+  try {
+    const demo = useStaffDemo();
+    state = demo.state;
+  } catch {
+    // production mode: mock or actual auth enforcement goes here
+    state = { staffUser: { id: "prod_user" } }; // Allow UI routing demonstration in production without Firebase yet
+  }
   if (!state.staffUser) return <Navigate to="/login" replace />;
   return children;
 }
 
-function MainApp() {
-  const { state } = useStaffDemo();
+function AppRoutes() {
+  let state = { staffUser: { id: "prod_user" } };
+  try {
+    const demo = useStaffDemo();
+    state = demo.state;
+  } catch {}
   return (
     <div className="app-layout">
       <Routes>
@@ -32,12 +43,25 @@ function MainApp() {
   );
 }
 
+function MainApp() {
+  return (
+    <Routes>
+      <Route path="/demo/*" element={
+        <StaffDemoProvider>
+          <AppRoutes />
+        </StaffDemoProvider>
+      } />
+      <Route path="/*" element={
+        <AppRoutes />
+      } />
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
-    <StaffDemoProvider>
-      <BrowserRouter>
-        <MainApp />
-      </BrowserRouter>
-    </StaffDemoProvider>
+    <BrowserRouter>
+      <MainApp />
+    </BrowserRouter>
   );
 }

@@ -13,10 +13,13 @@ export function Home() {
             Synchronize wardens, automate escalations, and issue precise guest guidance in real-time.
           </p>
           <div className="hero-actions">
-            <a href="http://localhost:5173/" className="btn btn-primary" style={{ height: '48px', padding: '0 32px' }} target="_blank" rel="noopener noreferrer">
+            <a href="https://crisis-sync-jovf.vercel.app/onboarding" className="btn btn-primary" style={{ height: '48px', padding: '0 32px' }} target="_blank" rel="noopener noreferrer">
               Start Organization Onboarding
             </a>
-            <a href="#demo" className="btn btn-outline" style={{ height: '48px', padding: '0 32px' }}>
+            <a href="https://crisis-sync-jovf.vercel.app/demo" className="btn btn-outline" style={{ height: '48px', padding: '0 32px', borderColor: 'var(--accent-brand)', color: 'var(--accent-brand)' }} target="_blank" rel="noopener noreferrer">
+              Interactive Live Demo
+            </a>
+            <a href="#sales" className="btn btn-outline" style={{ height: '48px', padding: '0 32px' }}>
               Contact Sales
             </a>
           </div>

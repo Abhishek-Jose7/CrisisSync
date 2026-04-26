@@ -15,10 +15,13 @@ export function Navbar() {
           <Link to="#compliance" className="nav-link">Compliance</Link>
           
           <div style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
-            <a href="http://localhost:5174/" className="btn btn-outline" target="_blank" rel="noopener noreferrer">
+            <a href="https://crisis-sync-usof.vercel.app/login" className="btn btn-outline" target="_blank" rel="noopener noreferrer">
               <LogIn size={16} /> Staff Portal
             </a>
-            <a href="http://localhost:5173/" className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            <a href="https://crisis-sync-usof.vercel.app/demo" className="btn btn-outline" target="_blank" rel="noopener noreferrer" style={{ borderColor: 'var(--accent-brand)', color: 'var(--accent-brand)' }}>
+              Staff Demo
+            </a>
+            <a href="https://crisis-sync-jovf.vercel.app/" className="btn btn-primary" target="_blank" rel="noopener noreferrer">
               Admin Console <ExternalLink size={16} />
             </a>
           </div>

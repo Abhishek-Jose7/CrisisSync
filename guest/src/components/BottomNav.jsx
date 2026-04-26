@@ -1,4 +1,3 @@
-export function GuestBottomNavMockText() {
-  // Fix BottomNav for exact Match
+export function BottomNav() {
   return null;
 }
