@@ -1,27 +1,52 @@
-import { ArrowRight, Building2, Camera, ClipboardCheck, ShieldCheck, UserCheck, UsersRound } from 'lucide-react';
+import { ArrowRight, Building2, MapPinned, ShieldCheck, UserCheck, Users } from 'lucide-react';
 import { roleLinks } from '../../siteConfig';
 
 const roles = [
   {
     icon: Building2,
-    title: 'Admin portal',
+    title: 'Admin Portal',
     href: roleLinks.admin.production,
-    action: 'Sign in as Admin',
-    items: ['Google sign-in', 'New venue onboarding', 'Zone and staff setup', 'Playbooks, QR cards, and command center'],
+    action: 'Access Admin Portal',
+    items: [
+      'Email + password login',
+      'Organization type selection',
+      '8-step venue onboarding wizard',
+      'Zone builder with preloaded templates',
+      'Staff invitation and assignment',
+      'Playbook and escalation configuration',
+      'QR code generation and export',
+      'Live incident command center',
+    ],
   },
   {
-    icon: UsersRound,
-    title: 'Staff PWA',
+    icon: Users,
+    title: 'Staff Access',
     href: roleLinks.staff.production,
-    action: 'Sign in as Staff',
-    items: ['Google sign-in', 'Staff profile onboarding', 'Assigned zone and shift', 'Incident checklist, map, and status updates'],
+    action: 'Access Staff Portal',
+    items: [
+      'Email + password login',
+      'Role-based routing (Warden / Senior Warden / Duty Manager)',
+      'Zone-specific incident dashboard',
+      'Checklist completion and status updates',
+      'AI-assisted safety tips',
+      'Multi-zone coordination for senior staff',
+      'Map view with exit routes',
+    ],
   },
   {
-    icon: Camera,
-    title: 'Guest PWA',
+    icon: MapPinned,
+    title: 'Guest Access',
     href: roleLinks.guest.production,
-    action: 'Sign in as Guest',
-    items: ['Google sign-in', 'Camera scanner first', 'QR token validation', 'Zone guidance, SOS, route, and assembly point'],
+    action: 'View Guest Experience',
+    items: [
+      'No login required — QR scan only',
+      'Zone-specific safety information',
+      'Exit routes and assembly points',
+      'One-tap SOS with structured input',
+      'Live incident severity updates',
+      'Multilingual AI-generated instructions',
+      'Panic-proof emergency interface',
+    ],
   },
 ];
 
@@ -30,10 +55,10 @@ export function Roles() {
     <section className="page-shell">
       <div className="container">
         <div className="page-header">
-          <span className="eyebrow">Role access</span>
-          <h1>Each role opens its own deployed app.</h1>
+          <span className="eyebrow">Access Portals</span>
+          <h1>Each role operates in its own deployed application.</h1>
           <p>
-            The public website does not impersonate the Admin, Staff, or Guest products. It sends people to the right independent app, where Google sign-in and onboarding happen inside that role surface.
+            Admin, Staff, and Guest apps are independently deployed with separate data boundaries and access controls. The website routes users to the correct portal for their role.
           </p>
         </div>
 
@@ -42,15 +67,15 @@ export function Roles() {
             const Icon = role.icon;
             return (
               <article className="role-card" key={role.title}>
-                <div className="role-card__icon"><Icon size={26} /></div>
+                <div className="role-card__icon"><Icon size={24} /></div>
                 <h2>{role.title}</h2>
                 <ul>
                   {role.items.map((item) => (
-                    <li key={item}><ShieldCheck size={16} /> {item}</li>
+                    <li key={item}><ShieldCheck size={14} /> {item}</li>
                   ))}
                 </ul>
                 <a className="btn btn-primary" href={role.href} target="_blank" rel="noreferrer">
-                  {role.action} <ArrowRight size={18} />
+                  {role.action} <ArrowRight size={16} />
                 </a>
               </article>
             );
@@ -58,14 +83,13 @@ export function Roles() {
         </div>
 
         <div className="timeline-panel">
-          <ClipboardCheck size={24} />
           <div>
-            <h2>New user path</h2>
+            <UserCheck size={20} />
+            <h2>Access flow</h2>
             <p>
-              Admins complete the full venue setup before command access. Staff confirm zone, role, and shift before entering the PWA. Guests authenticate, scan a QR code, and then land in the matching venue zone session.
+              Admins complete venue onboarding before accessing the command center. Staff confirm role, zone, and shift assignment. Guests access their zone directly via QR code — no authentication required.
             </p>
           </div>
-          <UserCheck size={24} />
         </div>
       </div>
     </section>

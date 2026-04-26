@@ -1,48 +1,113 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../../../shared/firebase/config';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useAdminAuth } from '../../context/AuthContext';
+import { ShieldAlert, Eye, EyeOff, ArrowRight, AlertTriangle } from 'lucide-react';
 
 export function Login() {
   const navigate = useNavigate();
-  const { refreshSetupState } = useAdminAuth();
+  const { loginWithEmail, registerWithEmail, authError, clearError } = useAdminAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [mode, setMode] = useState('login'); // 'login' | 'register'
 
-  async function handleGoogleLogin() {
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!email || !password) return;
     setLoading(true);
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const complete = localStorage.getItem(`crisissync:admin:onboarding:${result.user.uid}`) === 'complete';
-      refreshSetupState(result.user);
-      navigate(complete ? '/command' : '/onboarding', { replace: true });
-    } catch (error) {
-      console.error(error);
-      alert('Login failed. Please try again.');
+      const fn = mode === 'register' ? registerWithEmail : loginWithEmail;
+      const result = await fn(email, password);
+      navigate(result.setupComplete ? '/command' : '/onboarding', { replace: true });
+    } catch {
+      // Error is set in context
     } finally {
       setLoading(false);
     }
   }
 
+  function switchMode() {
+    clearError();
+    setMode(mode === 'login' ? 'register' : 'login');
+  }
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-dark)', color: 'white', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: 'var(--bg-card)', padding: 'var(--space-8)', borderRadius: 'var(--radius-lg)', textAlign: 'center', maxWidth: 400, width: '100%' }}>
-        <div style={{ width: 64, height: 64, background: 'var(--severity-info-bg)', color: 'var(--severity-info)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-4)', margin: '0 auto 16px' }}>
-          🛡️
+    <div className="login-screen">
+      <div className="login-panel">
+        <div className="login-icon">
+          <ShieldAlert size={28} />
         </div>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '8px' }}>CrisisSync Admin</h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Sign in first. New admins continue into venue setup before the command center opens.</p>
-        
-        <button 
-          onClick={handleGoogleLogin} 
-          disabled={loading}
-          className="btn btn--primary btn--block"
-          style={{ background: 'white', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', width: '100%', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-        >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path fillRule="evenodd" clipRule="evenodd" d="M17.64 9.20455C17.64 8.56636 17.5827 7.95273 17.4764 7.36364H9V10.845H13.8436C13.635 11.97 13.0009 12.9232 12.0477 13.5614V15.8195H14.9564C16.6582 14.2527 17.64 11.9455 17.64 9.20455Z" fill="#4285F4"/><path fillRule="evenodd" clipRule="evenodd" d="M9 18C11.43 18 13.4673 17.1941 14.9564 15.8195L12.0477 13.5614C11.2418 14.1014 10.2109 14.4205 9 14.4205C6.65591 14.4205 4.67182 12.8373 3.96409 10.71H0.957275V13.0418C2.43818 15.9832 5.48182 18 9 18Z" fill="#34A853"/><path fillRule="evenodd" clipRule="evenodd" d="M3.96409 10.71C3.78409 10.17 3.68182 9.59318 3.68182 9C3.68182 8.40682 3.78409 7.83 3.96409 7.29H0.957275V4.95818C0.347727 6.17318 0 7.54773 0 9C0 10.4523 0.347727 11.8268 0.957275 13.0418L3.96409 10.71Z" fill="#FBBC05"/><path fillRule="evenodd" clipRule="evenodd" d="M9 3.57955C10.3214 3.57955 11.5077 4.03364 12.4405 4.92545L15.0218 2.34409C13.4632 0.891818 11.4259 0 9 0C5.48182 0 2.43818 2.01682 0.957275 4.95818L3.96409 7.29C4.67182 5.16273 6.65591 3.57955 9 3.57955Z" fill="#EA4335"/></svg>
-          {loading ? 'Authenticating...' : 'Sign in with Google'}
-        </button>
+        <h1 className="login-title">CrisisSync Admin</h1>
+        <p className="login-subtitle">
+          {mode === 'login'
+            ? 'Sign in to access the command center. New admins will be routed to venue setup.'
+            : 'Create an admin account. You will complete venue onboarding after registration.'
+          }
+        </p>
+
+        {authError && (
+          <div className="login-error" role="alert">
+            <AlertTriangle size={16} />
+            <span>{authError}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="login-field">
+            <label htmlFor="admin-email">Email address</label>
+            <input
+              id="admin-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@company.com"
+              required
+              autoComplete="email"
+              autoFocus
+            />
+          </div>
+
+          <div className="login-field">
+            <label htmlFor="admin-password">Password</label>
+            <div className="login-password-wrap">
+              <input
+                id="admin-password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={mode === 'register' ? 'Minimum 6 characters' : 'Enter password'}
+                required
+                minLength={6}
+                autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+              />
+              <button
+                type="button"
+                className="login-password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" disabled={loading} className="login-submit">
+            {loading
+              ? 'Processing...'
+              : mode === 'login' ? 'Sign In' : 'Create Account'
+            }
+            {!loading && <ArrowRight size={16} />}
+          </button>
+        </form>
+
+        <div className="login-switch">
+          {mode === 'login' ? (
+            <span>New organization? <button type="button" onClick={switchMode}>Create admin account</button></span>
+          ) : (
+            <span>Already have an account? <button type="button" onClick={switchMode}>Sign in</button></span>
+          )}
+        </div>
       </div>
     </div>
   );

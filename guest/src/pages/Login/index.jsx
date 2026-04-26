@@ -1,49 +1,46 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { Camera, ShieldCheck } from 'lucide-react';
-import { auth } from '../../../../shared/firebase/config';
-import { useGuestDemo } from '../../context/DemoContext';
+import { ShieldCheck, QrCode, MapPin } from 'lucide-react';
 import { InstallAppButton } from '../../components/InstallAppButton';
 
 export function GuestLogin({ basePath = '' }) {
-  const navigate = useNavigate();
-  const { actions } = useGuestDemo();
-  const [loading, setLoading] = useState(false);
-
-  async function signIn(event) {
-    event.preventDefault();
-    setLoading(true);
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      actions.loginGuest(result.user);
-      navigate(`${basePath}/scan`, { replace: true });
-    } catch (error) {
-      console.error(error);
-      alert('Google sign-in failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <div className="guest-auth">
       <div className="guest-auth__panel">
         <div className="guest-auth__icon">
           <ShieldCheck size={30} />
         </div>
-        <h1>Guest safety access</h1>
-        <p>Sign in with Google first. Then scan the venue QR code to open the correct zone instructions.</p>
-        <button className="btn btn--danger" onClick={signIn} disabled={loading}>
-          {loading ? 'Signing in...' : 'Sign in with Google'}
-        </button>
-        <div className="scanner-hint">
-          <Camera size={18} />
-          Camera scanner opens after sign-in.
+        <h1>Guest Safety Access</h1>
+        <p>Scan the QR code in your area to access zone-specific emergency information, exit routes, and the SOS button.</p>
+        
+        <div className="qr-instruction-card">
+          <QrCode size={48} style={{ color: 'var(--accent-blue, #3d8de9)', opacity: 0.6 }} />
+          <div>
+            <strong>Look for the CrisisSync QR code</strong>
+            <span>Located near exits, lobbies, and common areas</span>
+          </div>
         </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '16px 0' }}>
+          <InfoRow icon={<MapPin size={16} />} text="Each QR code is specific to your zone" />
+          <InfoRow icon={<ShieldCheck size={16} />} text="No account or sign-up required" />
+          <InfoRow icon={<QrCode size={16} />} text="Session is active for 4 hours after scan" />
+        </div>
+
+        <div className="scanner-hint">
+          <strong>No QR code available?</strong>
+          <span>Ask venue staff for assistance or visit the front desk.</span>
+        </div>
+        
         <InstallAppButton />
       </div>
+    </div>
+  );
+}
+
+function InfoRow({ icon, text }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.875rem', color: '#555' }}>
+      <span style={{ color: '#3d8de9', flexShrink: 0 }}>{icon}</span>
+      <span>{text}</span>
     </div>
   );
 }

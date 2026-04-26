@@ -8,35 +8,37 @@ export function Footer() {
         <div>
           <Link to="/" className="brand footer__brand">CrisisSync</Link>
           <p className="footer-text">
-            Digital coordination infrastructure for venue teams during critical incidents.
+            Enterprise emergency coordination infrastructure for hospitality, healthcare, retail, and corporate venues.
           </p>
         </div>
 
-        <nav aria-label="Production portals">
-          <h2>Production</h2>
-          <a href={roleLinks.admin.production} target="_blank" rel="noreferrer">Admin portal</a>
-          <a href={roleLinks.staff.production} target="_blank" rel="noreferrer">Staff PWA</a>
-          <a href={roleLinks.guest.production} target="_blank" rel="noreferrer">Guest scanner</a>
+        <nav aria-label="Platform">
+          <h2>Platform</h2>
+          <Link to="/about">About</Link>
+          <Link to="/how-it-works">How It Works</Link>
+          <Link to="/solutions">Solutions</Link>
+          <Link to="/compliance">Compliance</Link>
         </nav>
 
-        <nav aria-label="Website pages">
-          <h2>Website</h2>
-          <Link to="/platform">Platform</Link>
-          <Link to="/roles">Role Access</Link>
-          <Link to="/demo">Demo URLs</Link>
-          <Link to="/compliance">Compliance</Link>
+        <nav aria-label="Access">
+          <h2>Access</h2>
+          <a href={roleLinks.admin.production} target="_blank" rel="noreferrer">Admin Portal</a>
+          <a href={roleLinks.staff.production} target="_blank" rel="noreferrer">Staff Access</a>
+          <Link to="/guest-access">Guest Access</Link>
+          <Link to="/demo">Demo Environment</Link>
+          <Link to="/contact">Contact</Link>
         </nav>
 
         <div className="footer__notice">
           <h2>Safety Notice</h2>
           <p>
-            CrisisSync is an operational support tool. It does not replace legally mandated safety systems, emergency service calls, or certified wardens.
+            CrisisSync is an operational coordination tool. It does not replace legally mandated fire safety systems, emergency service dispatch, certified wardens, or building compliance inspections. Venues remain fully responsible for their legal safety obligations.
           </p>
         </div>
       </div>
       <div className="container footer__bottom">
-        <span>© {new Date().getFullYear()} CrisisSync.</span>
-        <span>Demo and production routes are intentionally separate.</span>
+        <span>© {new Date().getFullYear()} CrisisSync. All rights reserved.</span>
+        <span>Enterprise venue emergency coordination.</span>
       </div>
     </footer>
   );

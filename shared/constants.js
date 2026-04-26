@@ -50,6 +50,6 @@ export const INCIDENT_TRIGGERS = {
   systemAutomatic: 'System Auto',
 };
 
-export const VENUE_TYPES = ['hotel', 'mall', 'restaurant', 'event', 'cowork'];
+export const VENUE_TYPES = ['hotel', 'mall', 'restaurant', 'hospital', 'event', 'corporate', 'cowork', 'other'];
 
 export const SHIFTS = ['morning', 'evening', 'night'];

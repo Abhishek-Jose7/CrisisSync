@@ -1,7 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../../shared/firebase/config';
+import { createContext, useContext, useMemo, useReducer } from 'react';
 
 const GuestDemoContext = createContext(null);
 
@@ -40,8 +38,6 @@ const DEFAULT_ZONE = ZONES_BY_TOKEN['floor7-ghi789'];
 
 const BASE_STATE = {
   mode: 'main',
-  guestUser: null,
-  authReady: false,
   venueName: 'Grand Orchid Hotel',
   zoneId: null,
   zoneName: null,
@@ -64,24 +60,11 @@ function createInitialState(mode) {
   return {
     ...BASE_STATE,
     mode,
-    authReady: mode === 'demo',
   };
 }
 
 function reducer(state, action) {
   switch (action.type) {
-    case 'LOGIN_GUEST':
-      return {
-        ...state,
-        authReady: true,
-        guestUser: {
-          uid: action.payload.uid,
-          email: action.payload.email,
-          name: action.payload.displayName || 'Guest',
-        },
-      };
-    case 'AUTH_READY':
-      return { ...state, authReady: true, guestUser: null };
     case 'START_SESSION': {
       const zone = ZONES_BY_TOKEN[action.payload] || DEFAULT_ZONE;
       return {
@@ -115,17 +98,7 @@ function reducer(state, action) {
 export function GuestDemoProvider({ children, mode = 'main' }) {
   const [state, dispatch] = useReducer(reducer, mode, createInitialState);
 
-  useEffect(() => {
-    if (mode === 'demo') return undefined;
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) dispatch({ type: 'LOGIN_GUEST', payload: user });
-      else dispatch({ type: 'AUTH_READY' });
-    });
-    return unsubscribe;
-  }, [mode]);
-
   const actions = useMemo(() => ({
-    loginGuest: (user) => dispatch({ type: 'LOGIN_GUEST', payload: user }),
     startSession: (token) => dispatch({ type: 'START_SESSION', payload: token }),
     triggerIncident: () => dispatch({ type: 'TRIGGER_INCIDENT' }),
     sendSos: (urgency) => dispatch({ type: 'SEND_SOS', payload: urgency }),
