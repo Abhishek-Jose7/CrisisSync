@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ====================================================
+   CrisisSync Guest PWA — Safety Card & Evacuation
+   High contrast, clear instructions, bold status colors.
+   ==================================================== */
+
+:root {
+  /* ── Core Surfaces (Default Safe Mode) ── */
+  --bg-root: #ffffff;
+  --bg-surface: #f4f4f8;
+  --bg-card: #ffffff;
+  --text-primary: #12121a;
+  --text-secondary: #5a5a73;
+  --text-muted: #8e8ea6;
+  --border-default: #e4e4eb;
+
+  /* ── Status Colors ── */
+  --color-danger: #ea4335;
+  --color-danger-dark: #b31412;
+  --color-success: #34a853;
+  --color-info: #4285f4;
+  
+  /* ── Spacing ── */
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+
+  /* ── Radius ── */
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+}
+
+/* ── Active Incident (Danger Mode) ── */
+.theme-danger {
+  --bg-root: var(--color-danger);
+  --bg-surface: var(--color-danger-dark);
+  --bg-card: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.9);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --border-default: rgba(255, 255, 255, 0.2);
+}
+.theme-danger .card {
+  color: #12121a; 
+}
+.theme-danger .card .text-secondary {
+  color: #5a5a73;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-root);
+  color: var(--text-primary);
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overscroll-behavior-y: none;
+  touch-action: pan-x pan-y;
+}
+
+#root { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── Container ── */
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ── Header ── */
+.header {
+  padding: var(--space-4) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header__brand {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+.header__zone {
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: rgba(127, 127, 127, 0.2);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-full);
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.1s, opacity 0.2s;
+  user-select: none;
+  width: 100%;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.6; pointer-events: none; }
+
+.btn--danger { background: var(--color-danger); color: white; }
+.btn--white { background: white; color: var(--color-danger); }
+.btn--outline { background: transparent; border: 2px solid currentColor; color: inherit; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  margin-bottom: var(--space-4);
+}
+.card__title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: var(--space-2);
+}
+
+/* ── Utilities ── */
+.text-center { text-align: center; }
+.text-secondary { color: var(--text-secondary); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mt-auto { margin-top: auto; }
+
+/* ── SOS Button (Giant) ── */
+.sos-trigger {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-8) auto;
+  border: 12px solid rgba(234, 67, 53, 0.2);
+  box-shadow: 0 16px 48px rgba(234, 67, 53, 0.4);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.sos-trigger:active { transform: scale(0.95); }
+.sos-trigger span { font-size: 2.5rem; font-weight: 900; letter-spacing: 0.05em; }
+.sos-trigger small { font-size: 1rem; font-weight: 600; opacity: 0.9; margin-top: 4px; }

@@ -1,0 +1,322 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ====================================================
+   CrisisSync Staff PWA — Field Response Tool
+   Dark mode. High contrast. Large touch targets.
+   ==================================================== */
+
+:root {
+  /* ── Core Surfaces ── */
+  --bg-root: #040406;
+  --bg-primary: #0d0d12;
+  --bg-surface: #16161e;
+  --bg-elevated: #1e1e28;
+  --bg-overlay: #22222e;
+  --bg-hover: #2a2a38;
+  --bg-active: #303040;
+
+  /* ── Borders ── */
+  --border-subtle: #22222a;
+  --border-default: #2c2c38;
+  --border-strong: #3e3e4a;
+  --border-focus: #4b9ce2;
+
+  /* ── Text ── */
+  --text-primary: #f8f8fb;
+  --text-secondary: #a8a8c0;
+  --text-muted: #6e6e8a;
+
+  /* ── Severity & Status (Same as Admin) ── */
+  --severity-1: #EF9F27;
+  --severity-1-bg: rgba(239, 159, 39, 0.15);
+  --severity-2: #E07020;
+  --severity-2-bg: rgba(224, 112, 32, 0.15);
+  --severity-3: #ff5252;
+  --severity-3-bg: rgba(255, 82, 82, 0.15);
+
+  --status-clear: #20b888;
+  --status-clear-bg: rgba(32, 184, 136, 0.15);
+  --status-info: #4b9ce2;
+  --status-info-bg: rgba(75, 156, 226, 0.15);
+
+  /* ── Spacing (Optimized for Touch) ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+
+  /* ── Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  --topbar-height: 60px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-root);
+  color: var(--text-primary);
+  line-height: 1.5;
+  /* Prevent bounce & double tap zoom on mobile */
+  overscroll-behavior-y: none;
+  touch-action: pan-x pan-y;
+}
+
+#root { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── Utility ── */
+.safe-area-pt { padding-top: env(safe-area-inset-top); }
+.safe-area-pb { padding-bottom: env(safe-area-inset-bottom); }
+
+/* ── App Shell ── */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.topbar {
+  background: var(--bg-primary);
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--border-default);
+  z-index: 10;
+}
+
+.topbar__title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.topbar__subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.topbar__status {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom));
+}
+
+/* ── Buttons (Large Touch Targets) ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.1s;
+  user-select: none;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; pointer-events: none; }
+
+.btn--primary { background: var(--status-info); color: white; }
+.btn--danger { background: var(--severity-3); color: white; }
+.btn--success { background: var(--status-clear); color: white; }
+.btn--ghost { background: var(--bg-surface); color: var(--text-primary); border: 1px solid var(--border-default); }
+
+.btn--block { width: 100%; }
+
+/* ── Checklist ── */
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.checklist-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  gap: var(--space-3);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.checklist-item--done {
+  background: var(--status-clear-bg);
+  border-color: rgba(32, 184, 136, 0.3);
+}
+
+.checklist-item__checkbox {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.2s;
+}
+
+.checklist-item--done .checklist-item__checkbox {
+  border-color: var(--status-clear);
+  background: var(--status-clear);
+  color: white;
+}
+
+.checklist-item__text {
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.checklist-item--done .checklist-item__text {
+  text-decoration: line-through;
+  color: var(--status-clear);
+}
+
+/* ── View States ── */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-5);
+}
+
+.empty-state__icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-4);
+}
+
+.empty-state__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.empty-state__desc {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* ── Fixed Bottom Actions ── */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+  background: rgba(13, 13, 18, 0.9);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border-default);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* ── Forms ── */
+.form-input {
+  width: 100%;
+  min-height: 56px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-4);
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin-bottom: var(--space-4);
+}
+
+/* ── Horizontal Status Strip ── */
+.status-strip-container {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: var(--space-1) 0;
+  scrollbar-width: none;
+}
+.status-strip-container::-webkit-scrollbar { display: none; }
+
+.status-bubble {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+
+/* ── AI Tips Panel ── */
+.tips-panel {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+.tips-panel__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: #A78BFA;
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+}
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+.tip-item::before {
+  content: '•';
+  color: #A78BFA;
+  font-weight: bold;
+}
