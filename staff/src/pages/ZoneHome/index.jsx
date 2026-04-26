@@ -4,13 +4,7 @@ import { TopBar } from '../../components/TopBar';
 import { useEffect } from 'react';
 
 export function ZoneHome() {
-  let state = {};
-  let actions = {};
-  try {
-    const demo = useStaffDemo();
-    state = demo.state;
-    actions = demo.actions;
-  } catch {}
+  const { actions } = useStaffDemo();
   const navigate = useNavigate();
 
   useEffect(() => {

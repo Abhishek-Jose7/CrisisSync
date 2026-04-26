@@ -9,24 +9,13 @@ import { BottomNav } from './components/BottomNav';
 import './index.css';
 
 function RequireAuth({ children }) {
-  let state = { staffUser: null };
-  try {
-    const demo = useStaffDemo();
-    state = demo.state;
-  } catch {
-    // production mode: mock or actual auth enforcement goes here
-    state = { staffUser: { id: "prod_user" } }; // Allow UI routing demonstration in production without Firebase yet
-  }
+  const { state } = useStaffDemo();
   if (!state.staffUser) return <Navigate to="/login" replace />;
   return children;
 }
 
 function AppRoutes() {
-  let state = { staffUser: { id: "prod_user" } };
-  try {
-    const demo = useStaffDemo();
-    state = demo.state;
-  } catch {}
+  const { state } = useStaffDemo();
   return (
     <div className="app-layout">
       <Routes>

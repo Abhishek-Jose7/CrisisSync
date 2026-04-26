@@ -9,27 +9,37 @@ import { BottomNav } from './components/BottomNav';
 import './index.css';
 
 function MainApp() {
-  const { state } = useGuestDemo();
-
   return (
-    <div className="container">
+    <div className="app-layout">
       <Routes>
-        <Route path="/" element={state.activeIncident ? <EvacuationMode /> : <ZoneLanding />} />
-        <Route path="/map" element={<MapView />} />
-        <Route path="/guide" element={<Guide />} />
+        {/* Isolated Demo Environment */}
+        <Route path="/demo/*" element={
+          <GuestDemoProvider>
+            <Routes>
+              <Route path="/" element={<EvacuationMode />} />
+              <Route path="/guide" element={<PlaceholderView title="Evacuation Guide" icon="🚶‍♂️" description="Turn right at the hallway and proceed down Staircase A." />} />
+              <Route path="/assembly" element={<PlaceholderView title="Assembly Point" icon="📍" description="Proceed to Primary Assembly Point: North Parking Lot." />} />
+            </Routes>
+          </GuestDemoProvider>
+        } />
+        
+        {/* Production Environment */}
+        <Route path="/*" element={
+          <Routes>
+            <Route path="/" element={<EvacuationMode />} />
+            <Route path="/guide" element={<PlaceholderView title="Evacuation Guide" icon="🚶‍♂️" description="Real-time safe routing will appear here." />} />
+            <Route path="/assembly" element={<PlaceholderView title="Assembly Point" icon="📍" description="Your designated safe zone will highlight here." />} />
+          </Routes>
+        } />
       </Routes>
-      
-      <BottomNav />
     </div>
   );
 }
 
 export default function App() {
   return (
-    <GuestDemoProvider>
-      <BrowserRouter>
-        <MainApp />
-      </BrowserRouter>
-    </GuestDemoProvider>
+    <BrowserRouter>
+      <MainApp />
+    </BrowserRouter>
   );
 }

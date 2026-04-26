@@ -54,5 +54,7 @@ export function GuestDemoProvider({ children }) {
 }
 
 export function useGuestDemo() {
-  return useContext(GuestDemoContext);
+  const ctx = useContext(GuestDemoContext);
+  if (!ctx) return { state: {}, actions: {} };
+  return ctx;
 }

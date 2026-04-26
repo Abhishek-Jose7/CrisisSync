@@ -75,5 +75,7 @@ export function StaffDemoProvider({ children }) {
 }
 
 export function useStaffDemo() {
-  return useContext(StaffDemoContext);
+  const ctx = useContext(StaffDemoContext);
+  if (!ctx) return { state: { staffUser: { id: "prod_user" } }, actions: {} };
+  return ctx;
 }

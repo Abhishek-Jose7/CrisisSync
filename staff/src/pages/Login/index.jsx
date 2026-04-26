@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStaffDemo } from '../../context/DemoContext';
+import { InstallAppButton } from '../../components/InstallAppButton';
 
 export function Login() {
   const { actions } = useStaffDemo();
@@ -42,6 +43,9 @@ export function Login() {
         >
           Sign In
         </button>
+        <div style={{ marginTop: '16px' }}>
+          <InstallAppButton />
+        </div>
       </form>
     </div>
   );

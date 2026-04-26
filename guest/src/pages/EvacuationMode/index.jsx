@@ -1,9 +1,13 @@
 import { useGuestDemo } from '../../context/DemoContext';
 import { Globe, ShieldCheck, ChevronRight, ShieldAlert, Navigation, Users, Phone } from 'lucide-react';
 import { BottomNav } from '../../components/BottomNav';
+import { InstallAppButton } from '../../components/InstallAppButton';
+
+import { useNavigate } from 'react-router-dom';
 
 export function EvacuationMode() {
   const { state, actions } = useGuestDemo();
+  const navigate = useNavigate();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', background: '#f9f9f9', margin: 'calc(-1 * var(--space-4))', padding: 'var(--space-4)', paddingBottom: 80 }}>
@@ -52,11 +56,16 @@ export function EvacuationMode() {
             <ChevronRight size={18} color="var(--color-danger)" />
           </div>
 
-          <MenuLink icon={<ShieldCheck size={20} color="#3b82f6" />} title="What to do" subtitle="Step-by-step safety instructions" />
-          <MenuLink icon={<Navigation size={20} color="#10b981" />} title="Evacuation Guide" subtitle="Find your way to safety" />
-          <MenuLink icon={<Users size={20} color="#8b5cf6" />} title="Assembly Point" subtitle="Where to go after evacuation" />
+          <MenuLink onClick={() => navigate('/guide')} icon={<ShieldCheck size={20} color="#3b82f6" />} title="What to do" subtitle="Step-by-step safety instructions" />
+          <MenuLink onClick={() => navigate('/guide')} icon={<Navigation size={20} color="#10b981" />} title="Evacuation Guide" subtitle="Find your way to safety" />
+          <MenuLink onClick={() => navigate('/assembly')} icon={<Users size={20} color="#8b5cf6" />} title="Assembly Point" subtitle="Where to go after evacuation" />
           <MenuLink icon={<Phone size={20} color="#f59e0b" />} title="Emergency Numbers" subtitle="Important contacts" />
 
+        </div>
+
+        {/* Install Button directly embedded correctly below the links */}
+        <div style={{ marginTop: '24px' }}>
+          <InstallAppButton />
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 'var(--space-12)', marginBottom: 'var(--space-4)', fontSize: '0.75rem', color: '#98a2b3', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
@@ -70,9 +79,9 @@ export function EvacuationMode() {
   );
 }
 
-function MenuLink({ icon, title, subtitle }) {
+function MenuLink({ icon, title, subtitle, onClick }) {
   return (
-    <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', padding: '16px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+    <div onClick={onClick} style={{ cursor: 'pointer', background: 'white', borderRadius: 'var(--radius-lg)', padding: '16px', display: 'flex', gap: '16px', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
        <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {icon}
        </div>

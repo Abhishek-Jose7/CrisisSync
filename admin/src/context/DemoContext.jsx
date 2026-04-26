@@ -374,6 +374,6 @@ export function DemoProvider({ children }) {
 
 export function useDemo() {
   const ctx = useContext(DemoContext);
-  if (!ctx) throw new Error('useDemo must be used within DemoProvider');
+  if (!ctx) return { state: {}, actions: {} };
   return ctx;
 }

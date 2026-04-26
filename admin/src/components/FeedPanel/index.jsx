@@ -1,11 +1,7 @@
 import { useDemo } from '../context/DemoContext';
 
 export function FeedPanel() {
-  let state = { alertFeed: [] };
-  try {
-    const demo = useDemo();
-    if(demo?.state) state = demo.state;
-  } catch {}
+  const { state } = useDemo();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', flex: 1, overflowY: 'auto' }}>
