@@ -45,14 +45,15 @@ function SummaryTile({ label, value, tone = 'info', note }) {
 
 export function IncidentsPage() {
   const { state, actions } = useDemo();
+  const isDemo = typeof window !== 'undefined' && window.location.pathname.startsWith('/demo');
   const incidents = useMemo(() => {
     const active = state.activeIncident?.status === 'active' ? [state.activeIncident] : [];
-    return [
-      ...active,
+    const historical = isDemo ? [
       { incidentId: 'incident-demo-closed-1', crisisType: 'medical', currentSeverity: 2, status: 'resolved', triggeredAt: new Date(Date.now() - 6 * 3600000), triggeredByZoneId: 'zone-restaurant' },
       { incidentId: 'incident-demo-closed-2', crisisType: 'power', currentSeverity: 1, status: 'resolved', triggeredAt: new Date(Date.now() - 28 * 3600000), triggeredByZoneId: 'zone-conference' },
-    ];
-  }, [state.activeIncident]);
+    ] : [];
+    return [...active, ...historical];
+  }, [state.activeIncident, isDemo]);
 
   return (
     <PageShell icon={AlertTriangle} eyebrow="Incident ledger" title="Active and historical incidents"
@@ -85,7 +86,7 @@ export function IncidentsPage() {
 }
 
 export function ZonesPage() {
-  const { state } = useDemo();
+  const { state, actions } = useDemo();
   const [qrImages, setQrImages] = useState({});
 
   useEffect(() => {
@@ -95,7 +96,7 @@ export function ZonesPage() {
       const isDemo = window.location.pathname.startsWith('/demo');
       const entries = await Promise.all(state.zones.map(async (zone) => {
         const url = `${guestBase}${isDemo ? '/demo' : '/zone'}/${zone.qrToken || zone.zoneId}`;
-        const dataUrl = await QRCode.toDataURL(url, { width: 152, margin: 2, errorCorrectionLevel: 'M' });
+        const dataUrl = await QRCode.toDataURL(url, { width: 280, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#000000', light: '#ffffff' } });
         return [zone.zoneId, { dataUrl, url }];
       }));
       if (!cancelled) setQrImages(Object.fromEntries(entries));
@@ -104,23 +105,72 @@ export function ZonesPage() {
     return () => { cancelled = true; };
   }, [state.zones]);
 
+  function getAssignedWarden(zoneId) {
+    return state.staff.find(s => s.assignedZones.includes(zoneId));
+  }
+
+  function handleWardenChange(zoneId, staffId) {
+    // Unassign old warden from this zone
+    const oldWarden = getAssignedWarden(zoneId);
+    if (oldWarden) {
+      actions.updateStaffMember({ staffId: oldWarden.staffId, patch: { assignedZones: oldWarden.assignedZones.filter(z => z !== zoneId) } });
+    }
+    // Assign new warden
+    if (staffId) {
+      const newWarden = state.staff.find(s => s.staffId === staffId);
+      if (newWarden) {
+        actions.updateStaffMember({ staffId, patch: { assignedZones: [...new Set([...newWarden.assignedZones, zoneId])] } });
+      }
+    }
+  }
+
+  const uncoveredCount = state.zones.filter(z => !getAssignedWarden(z.zoneId)).length;
+
   return (
     <PageShell icon={MapPinned} eyebrow="Zones and QR sessions" title="Operational zone map">
-      <div className="ops-grid ops-grid--three">
+      <div className="ops-grid ops-grid--four">
         <SummaryTile label="Configured zones" value={state.zones.length} tone="info" note="All mapped to QR tokens" />
         <SummaryTile label="High-risk zones" value={state.zones.filter(z => z.riskProfile === 'high').length} tone="warning" note="Kitchen playbook priority" />
         <SummaryTile label="Warden coverage" value={`${state.staff.filter(s => s.isOnDuty && s.assignedZones.length).length}/${state.zones.length}`} tone="success" note="Evening shift" />
+        <SummaryTile label="Uncovered zones" value={uncoveredCount} tone={uncoveredCount > 0 ? 'critical' : 'success'} note={uncoveredCount > 0 ? 'Assign wardens below' : 'All zones covered'} />
       </div>
       <div className="ops-zone-grid">
-        {state.zones.map(zone => (
-          <div key={zone.zoneId} className="ops-zone-with-qr">
-            <ZoneCard zone={zone} status={state.zoneStatuses[zone.zoneId]} sosCount={state.alertFeed.filter(a => a.zoneId === zone.zoneId).length} />
-            <div className="ops-qr-strip">
-              {qrImages[zone.zoneId]?.dataUrl ? <img src={qrImages[zone.zoneId].dataUrl} alt={`Scannable QR for ${zone.name}`} /> : <QrCode size={42} />}
-              <code>{zone.qrToken}</code>
+        {state.zones.map(zone => {
+          const warden = getAssignedWarden(zone.zoneId);
+          const availableStaff = state.staff.filter(s => s.role !== 'admin' && (s.assignedZones.length === 0 || s.assignedZones.includes(zone.zoneId)));
+          return (
+            <div key={zone.zoneId} className="ops-zone-with-qr">
+              <ZoneCard zone={zone} status={state.zoneStatuses[zone.zoneId]} sosCount={state.alertFeed.filter(a => a.zoneId === zone.zoneId).length} />
+
+              {/* Warden Assignment */}
+              <div style={{ padding: '10px 12px', background: warden ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${warden ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`, borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: warden ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '0.6rem', fontWeight: 800, color: warden ? '#10b981' : '#ef4444' }}>
+                  {warden ? warden.name.split(' ').map(n => n[0]).join('') : '?'}
+                </div>
+                <select
+                  value={warden?.staffId || ''}
+                  onChange={e => handleWardenChange(zone.zoneId, e.target.value)}
+                  style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '4px', color: 'white', padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer' }}
+                  aria-label={`Assign warden for ${zone.name}`}
+                >
+                  <option value="">— No warden assigned —</option>
+                  {state.staff.filter(s => s.role !== 'admin').map(s => (
+                    <option key={s.staffId} value={s.staffId}>{s.name} ({s.role}) {s.assignedZones.length > 0 && !s.assignedZones.includes(zone.zoneId) ? '(busy)' : ''}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* QR Code - Much bigger */}
+              <div className="ops-qr-strip">
+                {qrImages[zone.zoneId]?.dataUrl ? <img src={qrImages[zone.zoneId].dataUrl} alt={`Scannable QR for ${zone.name}`} /> : <QrCode size={60} />}
+                <div>
+                  <code style={{ display: 'block', marginBottom: '4px' }}>{zone.qrToken}</code>
+                  <span style={{ fontSize: '0.625rem', color: 'var(--text-secondary)' }}>{qrImages[zone.zoneId]?.url || 'generating...'}</span>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </PageShell>
   );
@@ -130,37 +180,46 @@ export function StaffPage() {
   const { state, actions } = useDemo();
   const [filter, setFilter] = useState('active');
   const visibleStaff = state.staff.filter(member => filter === 'all' || member.isOnDuty);
+  const uncoveredZones = state.zones.filter(z => !state.staff.some(s => s.assignedZones.includes(z.zoneId)));
 
   return (
-    <PageShell icon={Users} eyebrow="Active staff demo" title="Staff coverage and assignments"
+    <PageShell icon={Users} eyebrow="Active staff" title="Staff coverage and assignments"
       action={<div className="ops-segment"><button className={filter === 'active' ? 'active' : ''} onClick={() => setFilter('active')}>Active</button><button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>All</button></div>}>
       <div className="ops-grid ops-grid--four">
         <SummaryTile label="On duty now" value={state.staff.filter(s => s.isOnDuty).length} tone="success" />
         <SummaryTile label="Wardens" value={state.staff.filter(s => s.role.includes('warden')).length} tone="info" />
         <SummaryTile label="Duty managers" value={state.staff.filter(s => s.role === 'dutyManager').length} tone="warning" />
-        <SummaryTile label="Uncovered zones" value="0" tone="success" />
+        <SummaryTile label="Uncovered zones" value={uncoveredZones.length} tone={uncoveredZones.length > 0 ? 'critical' : 'success'} note={uncoveredZones.length > 0 ? uncoveredZones.map(z => z.name).join(', ') : 'All covered'} />
       </div>
       <div className="ops-staff-grid">
         {visibleStaff.map(member => {
-          const zones = state.zones.filter(zone => member.assignedZones.includes(zone.zoneId)).map(z => z.name).join(', ') || 'Command-wide';
+          const assignedZoneNames = state.zones.filter(zone => member.assignedZones.includes(zone.zoneId)).map(z => z.name);
           return (
             <article className="ops-staff-card" key={member.staffId}>
               <div className="ops-avatar">{member.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</div>
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <strong>{member.name}</strong>
-                <span>
-                  <select value={member.role} onChange={e => actions.updateStaffMember({ staffId: member.staffId, patch: { role: e.target.value } })} aria-label={`Role for ${member.name}`}>
+                <div style={{ display: 'flex', gap: '6px', marginTop: '4px', flexWrap: 'wrap' }}>
+                  <select value={member.role} onChange={e => actions.updateStaffMember({ staffId: member.staffId, patch: { role: e.target.value } })} aria-label={`Role for ${member.name}`}
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '4px', color: 'white', padding: '3px 6px', fontSize: '0.6875rem' }}>
                     <option value="admin">Admin</option>
                     <option value="dutyManager">Duty Manager</option>
                     <option value="seniorWarden">Senior Warden</option>
                     <option value="warden">Warden</option>
                   </select>
-                  <select value={member.assignedZones?.[0] || ''} onChange={e => actions.updateStaffMember({ staffId: member.staffId, patch: { assignedZones: e.target.value ? [e.target.value] : [] } })} aria-label={`Zone for ${member.name}`}>
-                    <option value="">Command-wide</option>
+                  <select value={member.assignedZones?.[0] || ''} onChange={e => actions.updateStaffMember({ staffId: member.staffId, patch: { assignedZones: e.target.value ? [e.target.value] : [] } })} aria-label={`Zone for ${member.name}`}
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '4px', color: 'white', padding: '3px 6px', fontSize: '0.6875rem', flex: 1, minWidth: '120px' }}>
+                    <option value="">No zone (Command-wide)</option>
                     {state.zones.map(zone => <option key={zone.zoneId} value={zone.zoneId}>{zone.name}</option>)}
                   </select>
-                </span>
-                <small>{zones}</small>
+                </div>
+                <div style={{ marginTop: '6px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {assignedZoneNames.length > 0 ? assignedZoneNames.map(name => (
+                    <span key={name} style={{ fontSize: '0.625rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(16,185,129,0.12)', color: '#10b981', fontWeight: 700 }}>{name}</span>
+                  )) : (
+                    <span style={{ fontSize: '0.625rem', padding: '2px 8px', borderRadius: '10px', background: 'rgba(245,158,11,0.12)', color: '#f59e0b', fontWeight: 700 }}>Command-wide</span>
+                  )}
+                </div>
               </div>
               <span className={`ops-badge ${member.isOnDuty ? 'is-safe' : ''}`}>{member.isOnDuty ? 'Active' : 'Off duty'}</span>
             </article>
@@ -197,29 +256,34 @@ export function PlaybooksPage() {
 
 export function ReportsPage() {
   const { state } = useDemo();
-  const rows = [
+  const isDemo = typeof window !== 'undefined' && window.location.pathname.startsWith('/demo');
+  const rows = isDemo ? [
     { title: 'Fire drill response report', status: 'Ready', owner: 'Priya Kapoor', time: 'Today, 08:40' },
     { title: 'Medical assist incident autopsy', status: 'Ready', owner: 'Anil Mehta', time: 'Yesterday, 18:10' },
     { title: 'Evening shift readiness audit', status: 'Drafting', owner: 'System', time: 'Live' },
-  ];
+  ] : [];
   return (
     <PageShell icon={FileText} eyebrow="Compliance records" title="Reports and post-incident audits">
       <div className="ops-grid ops-grid--three">
         <SummaryTile label="Timeline entries" value={state.timeline.length} tone="info" />
-        <SummaryTile label="Resolved incidents" value="2" tone="success" />
-        <SummaryTile label="Open actions" value="3" tone="warning" />
+        <SummaryTile label="Resolved incidents" value={isDemo ? '2' : '0'} tone="success" />
+        <SummaryTile label="Open actions" value={isDemo ? '3' : '0'} tone="warning" />
       </div>
       <div className="ops-panel">
-        <div className="ops-panel__head"><h2>Generated reports</h2><span>Export-ready demo records</span></div>
+        <div className="ops-panel__head"><h2>Generated reports</h2><span>{isDemo ? 'Demo records' : 'No reports yet'}</span></div>
         <div className="ops-table">
-          {rows.map(row => (
+          {rows.length > 0 ? rows.map(row => (
             <div className="ops-row" key={row.title}>
               <div><strong>{row.title}</strong><small>{row.owner}</small></div>
               <span className={`ops-badge ${row.status === 'Ready' ? 'is-safe' : 'is-warning'}`}>{row.status}</span>
               <span>{row.time}</span>
               <button className="btn btn--ghost btn--sm">Preview</button>
             </div>
-          ))}
+          )) : (
+            <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--text-muted)' }}>
+              Reports will be generated automatically after incidents are resolved.
+            </div>
+          )}
         </div>
       </div>
     </PageShell>

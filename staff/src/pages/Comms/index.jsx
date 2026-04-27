@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStaffDemo } from '../../context/DemoContext';
-import { MessageCircle, Send, Radio, Shield, AlertTriangle, Clock, Users } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { MessageCircle, Send, Radio, Shield, AlertTriangle, Clock } from 'lucide-react';
 
 const DEMO_BROADCASTS = [
   {
@@ -47,7 +48,9 @@ const DEMO_BROADCASTS = [
 
 export function CommsPage() {
   const { state } = useStaffDemo();
-  const [messages] = useState(DEMO_BROADCASTS);
+  const location = useLocation();
+  const isDemo = location.pathname.startsWith('/demo');
+  const [messages] = useState(isDemo ? DEMO_BROADCASTS : []);
   const [draft, setDraft] = useState('');
 
   const priorityColors = {
@@ -91,7 +94,13 @@ export function CommsPage() {
 
       {/* Messages Feed */}
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '16px' }}>
-        {messages.map(msg => {
+        {messages.length === 0 ? (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', textAlign: 'center', gap: '8px' }}>
+            <MessageCircle size={40} />
+            <h3 style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>No broadcasts yet</h3>
+            <p style={{ fontSize: '0.8125rem' }}>Messages from command and other wardens will appear here during an incident.</p>
+          </div>
+        ) : messages.map(msg => {
           const Icon = typeIcons[msg.type] || Radio;
           return (
             <div key={msg.id} style={{

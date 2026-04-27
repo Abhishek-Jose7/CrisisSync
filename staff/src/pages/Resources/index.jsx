@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { FileText, MapPin, Shield, AlertTriangle, BookOpen, Download, ExternalLink } from 'lucide-react';
 
 const DEMO_RESOURCES = [
@@ -47,6 +48,20 @@ const DEMO_RESOURCES = [
 ];
 
 export function ResourcesPage() {
+  const location = useLocation();
+  const isDemo = location.pathname.startsWith('/demo');
+  const resources = isDemo ? DEMO_RESOURCES : [];
+
+  if (!isDemo && resources.length === 0) {
+    return (
+      <div className="main-content" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 80px)', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <FileText size={40} />
+        <h3 style={{ color: 'var(--text-secondary)', fontWeight: 600, margin: '12px 0 4px' }}>No resources loaded</h3>
+        <p style={{ fontSize: '0.8125rem' }}>Safety protocols, floor plans, and checklists will appear here once your admin configures the venue.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="main-content" style={{ padding: 'var(--space-4)', overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
       <div style={{ marginBottom: 'var(--space-6)' }}>
@@ -58,7 +73,7 @@ export function ResourcesPage() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-        {DEMO_RESOURCES.map(section => {
+        {resources.map(section => {
           const SectionIcon = section.icon;
           return (
             <div key={section.id}>

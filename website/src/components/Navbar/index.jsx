@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { ShieldAlert, Building2, Users, MapPin, Play, ChevronDown } from 'lucide-react';
+import { ShieldAlert, Building2, Users, MapPin, Play, ChevronDown, Menu, X } from 'lucide-react';
 import { roleLinks } from '../../siteConfig';
 
 const navItems = [
@@ -13,6 +13,7 @@ const navItems = [
 
 export function Navbar() {
   const [demoOpen, setDemoOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const demoRef = useRef(null);
 
   useEffect(() => {
@@ -28,22 +29,10 @@ export function Navbar() {
   return (
     <nav className="navbar" aria-label="Primary navigation">
       <div className="container navbar__inner">
-        <NavLink to="/" className="brand" aria-label="CrisisSync home">
+        <NavLink to="/" className="brand" aria-label="CrisisSync home" onClick={() => setMobileMenuOpen(false)}>
           <ShieldAlert size={22} />
           <span>CrisisSync</span>
         </NavLink>
-
-        <div className="nav-links">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
 
         <div className="nav-actions">
           {/* Role Access Buttons */}
@@ -115,6 +104,23 @@ export function Navbar() {
               </div>
             )}
           </div>
+        </div>
+
+        <button className="hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle navigation">
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <div className={`nav-links ${mobileMenuOpen ? 'nav-links--open' : ''}`}>
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.label}
+            </NavLink>
+          ))}
         </div>
       </div>
     </nav>

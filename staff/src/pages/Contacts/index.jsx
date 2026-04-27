@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { Phone, Mail, MapPin, Shield, Users, Star } from 'lucide-react';
 
 const DEMO_CONTACTS = [
@@ -21,6 +22,21 @@ const EMERGENCY_NUMBERS = [
 ];
 
 export function ContactsPage() {
+  const location = useLocation();
+  const isDemo = location.pathname.startsWith('/demo');
+  const contacts = isDemo ? DEMO_CONTACTS : [];
+  const emergencyNumbers = isDemo ? EMERGENCY_NUMBERS : [];
+
+  if (!isDemo && contacts.length === 0) {
+    return (
+      <div className="main-content" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 80px)', textAlign: 'center', color: 'var(--text-muted)' }}>
+        <Users size={40} />
+        <h3 style={{ color: 'var(--text-secondary)', fontWeight: 600, margin: '12px 0 4px' }}>No contacts loaded</h3>
+        <p style={{ fontSize: '0.8125rem' }}>Your organization's contact directory will appear here once your admin sets up the venue.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="main-content" style={{ padding: 'var(--space-4)', overflowY: 'auto', height: 'calc(100vh - 80px)' }}>
       <div style={{ marginBottom: 'var(--space-4)' }}>
@@ -35,7 +51,7 @@ export function ContactsPage() {
       <div style={{ marginBottom: 'var(--space-6)' }}>
         <h2 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#ef4444', marginBottom: '10px' }}>Emergency Services</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px' }}>
-          {EMERGENCY_NUMBERS.map(num => (
+          {emergencyNumbers.map(num => (
             <a key={num.label} href={`tel:${num.number}`} style={{
               display: 'flex', flexDirection: 'column', gap: '4px', padding: '14px',
               background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
@@ -52,7 +68,7 @@ export function ContactsPage() {
       {/* Staff Directory */}
       <h2 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: '10px' }}>Staff Directory</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {DEMO_CONTACTS.map(contact => (
+        {contacts.map(contact => (
           <div key={contact.id} style={{
             display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: '14px', alignItems: 'center',
             padding: '14px 16px', background: 'var(--bg-card)', border: '1px solid rgba(255,255,255,0.06)',

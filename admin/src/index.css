@@ -2562,7 +2562,7 @@ body {
 
 .ops-zone-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--space-3);
 }
 
@@ -2583,8 +2583,8 @@ body {
 }
 
 .ops-qr-strip img {
-  width: 72px;
-  height: 72px;
+  width: 140px;
+  height: 140px;
   border: 4px solid white;
   border-radius: var(--radius-sm);
 }

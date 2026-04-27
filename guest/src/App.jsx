@@ -21,6 +21,9 @@ function ZoneSession({ basePath = '' }) {
   const { state, actions } = useGuestDemo();
 
   useEffect(() => {
+    if (token) {
+      localStorage.setItem('crisisSync_savedZoneToken', token);
+    }
     actions.startSession(token || 'floor7-ghi789');
   }, [actions, token]);
 
@@ -29,11 +32,19 @@ function ZoneSession({ basePath = '' }) {
   return <EnhancedZoneLanding basePath={basePath} />;
 }
 
+function IndexRedirect({ basePath, demoMode }) {
+  const savedToken = localStorage.getItem('crisisSync_savedZoneToken');
+  if (demoMode) {
+    return <Navigate to={`${basePath}/${savedToken || 'floor7-ghi789'}`} replace />;
+  }
+  return savedToken ? <Navigate to={`${basePath}/zone/${savedToken}`} replace /> : <Navigate to={`${basePath}/login`} replace />;
+}
+
 function GuestRoutes({ basePath = '', demoMode = false }) {
   if (demoMode) {
     return (
       <Routes>
-        <Route index element={<Navigate to={`${basePath}/floor7-ghi789`} replace />} />
+        <Route index element={<IndexRedirect basePath={basePath} demoMode={demoMode} />} />
         <Route path=":token" element={<ZoneSession basePath={basePath} />} />
         <Route path=":token/sos" element={<SOS basePath={basePath} />} />
         <Route path=":token/evacuate" element={<EvacuationMode basePath={basePath} />} />
@@ -52,7 +63,7 @@ function GuestRoutes({ basePath = '', demoMode = false }) {
       <Route path="evacuate" element={<EvacuationMode basePath={basePath} />} />
       <Route path="guide" element={<Guide />} />
       <Route path="assembly" element={<PlaceholderView title="Assembly Point" icon="📍" description="Your designated safe zone will appear after QR scan." />} />
-      <Route index element={<Navigate to={`${basePath}/login`} replace />} />
+      <Route index element={<IndexRedirect basePath={basePath} demoMode={demoMode} />} />
     </Routes>
   );
 }
