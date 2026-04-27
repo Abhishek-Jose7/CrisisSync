@@ -344,25 +344,28 @@ export function Home() {
 
         /* Brand name — large, bold, no gradient */
         .brand-name {
-          font-size: clamp(3rem, 5.5vw, 4.5rem) !important;
+          font-size: clamp(3rem, 5.5vw, 6rem) !important;
           line-height: 1.0 !important;
-          font-weight: 800 !important;
-          letter-spacing: -0.02em;
-          color: #ffffff !important;
+          font-weight: 400 !important;
+          letter-spacing: -0.01em;
+          color: var(--text-primary) !important;
           margin: 16px 0 20px !important;
+          font-family: var(--font-brand) !important;
         }
 
         .venue-panel h1:not(.brand-name) {
-          font-size: clamp(1.8rem, 3vw, 2.6rem);
+          font-size: clamp(1.8rem, 3vw, 3rem);
           line-height: 1.15;
           margin: 16px 0 20px;
-          color: #ffffff;
+          color: var(--text-primary);
+          font-family: var(--font-display);
+          font-weight: 400;
         }
 
         .venue-panel__lead {
           font-size: 1.05rem;
           line-height: 1.65;
-          opacity: 0.75;
+          color: var(--text-secondary);
           max-width: 480px;
           margin-bottom: 32px;
         }
@@ -465,7 +468,7 @@ export function Home() {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.25);
+          background: rgba(0,0,0,0.1);
           border: none;
           cursor: pointer;
           padding: 0;
@@ -473,7 +476,7 @@ export function Home() {
         }
 
         .morph-dot.is-active {
-          background: rgba(255,255,255,0.85);
+          background: var(--text-primary);
           transform: scale(1.4);
         }
 

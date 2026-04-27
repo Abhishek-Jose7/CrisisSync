@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&family=Forum&family=Alice&display=swap');
 
 /* ==========================================================================
    CRISISSYNC — Premium Dark Design System
@@ -7,53 +7,54 @@
 
 :root {
   /* ── Core Backgrounds ── */
-  --bg-root: #0B1120;
-  --bg-elevated: #111a2e;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-card-solid: #141e33;
-  --bg-card-hover: rgba(255, 255, 255, 0.07);
-  --bg-glass: rgba(255, 255, 255, 0.06);
-  --bg-glass-strong: rgba(255, 255, 255, 0.10);
-  --bg-input: rgba(255, 255, 255, 0.06);
-  --bg-overlay: rgba(11, 17, 32, 0.92);
+  --bg-root: #F8FAFC;
+  --bg-elevated: #FFFFFF;
+  --bg-card: rgba(15, 23, 42, 0.03);
+  --bg-card-solid: #FFFFFF;
+  --bg-card-hover: rgba(15, 23, 42, 0.05);
+  --bg-glass: rgba(255, 255, 255, 0.8);
+  --bg-glass-strong: rgba(255, 255, 255, 0.95);
+  --bg-input: #FFFFFF;
+  --bg-overlay: rgba(15, 23, 42, 0.4);
 
   /* ── Text ── */
-  --text-primary: #F0F4F8;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-inverse: #0B1120;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
 
-  /* ── Multi-tone Accents — BOLD, not shades ── */
-  --accent-coral: #FF3B3B;
-  --accent-coral-soft: rgba(255, 59, 59, 0.14);
-  --accent-teal: #00D68F;
-  --accent-teal-soft: rgba(0, 214, 143, 0.14);
-  --accent-amber: #FF8800;
-  --accent-amber-soft: rgba(255, 136, 0, 0.14);
-  --accent-indigo: #7B61FF;
-  --accent-indigo-soft: rgba(123, 97, 255, 0.14);
-  --accent-sky: #E040FB;
-  --accent-sky-soft: rgba(224, 64, 251, 0.14);
+  /* ── Multi-tone Accents ── */
+  --accent-coral: #E11D48;
+  --accent-coral-soft: rgba(225, 29, 72, 0.08);
+  --accent-teal: #0D9488;
+  --accent-teal-soft: rgba(13, 148, 136, 0.08);
+  --accent-amber: #D97706;
+  --accent-amber-soft: rgba(217, 119, 6, 0.08);
+  --accent-indigo: #4F46E5;
+  --accent-indigo-soft: rgba(79, 70, 229, 0.08);
+  --accent-sky: #0EA5E9;
+  --accent-sky-soft: rgba(14, 165, 233, 0.08);
 
   /* ── Status ── */
   --status-critical: #EF4444;
-  --status-critical-bg: rgba(239, 68, 68, 0.10);
+  --status-critical-bg: #FEF2F2;
   --status-warning: #F59E0B;
-  --status-warning-bg: rgba(245, 158, 11, 0.10);
+  --status-warning-bg: #FFFBEB;
   --status-safe: #10B981;
-  --status-safe-bg: rgba(16, 185, 129, 0.10);
+  --status-safe-bg: #ECFDF5;
   --status-info: #3B82F6;
-  --status-info-bg: rgba(59, 130, 246, 0.10);
+  --status-info-bg: #EFF6FF;
 
   /* ── Borders ── */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.10);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-default: rgba(15, 23, 42, 0.1);
+  --border-strong: rgba(15, 23, 42, 0.16);
   --border-focus: var(--accent-indigo);
 
   /* ── Typography ── */
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-sans: 'Arimo', sans-serif;
+  --font-display: 'Forum', serif;
+  --font-brand: 'Alice', serif;
 
   /* ── Spacing ── */
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
@@ -95,8 +96,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, .brand, .btn, .eyebrow {
+h1, h2, h3, .btn, .eyebrow {
   font-family: var(--font-display);
+}
+
+.brand, .brand-name {
+  font-family: var(--font-brand) !important;
 }
 
 button, input, select, textarea { font: inherit; }
@@ -111,22 +116,15 @@ img { max-width: 100%; display: block; }
 body::before {
   content: '';
   position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background:
-    radial-gradient(ellipse 600px 600px at 20% 20%, rgba(123, 97, 255, 0.10), transparent),
-    radial-gradient(ellipse 500px 500px at 80% 10%, rgba(255, 59, 59, 0.08), transparent),
-    radial-gradient(ellipse 400px 400px at 60% 80%, rgba(0, 214, 143, 0.07), transparent);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(225, 29, 72, 0.03) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
-  animation: meshFloat 20s ease-in-out infinite alternate;
-}
-
-@keyframes meshFloat {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(-3%, -2%); }
 }
 
 /* ==========================================================================
@@ -151,7 +149,7 @@ body::before {
   height: 72px;
   display: flex;
   align-items: center;
-  background: rgba(11, 17, 32, 0.75);
+  background: rgba(255, 255, 255, 0.85);
   border-bottom: 1px solid var(--border-subtle);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -240,14 +238,15 @@ body::before {
 .btn-small { min-height: 36px; padding: 0 16px; font-size: 0.8125rem; }
 
 .btn-primary {
-  background: linear-gradient(135deg, #FF3B3B, #FF8800);
+  background: #0F172A;
   color: white;
   border: none;
-  box-shadow: 0 4px 16px rgba(255, 59, 59, 0.3);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
 }
 .btn-primary:hover {
+  background: #1e293b;
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(255, 59, 59, 0.4);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
 }
 
 .btn-outline {
@@ -388,7 +387,7 @@ body::before {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 160px 0 100px;
+  padding: 180px 0 120px;
   overflow: hidden;
 }
 
@@ -425,16 +424,12 @@ body::before {
 
 .hero h1 {
   margin: 24px 0 20px;
-  font-size: 5rem;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, #F0F4F8 0%, #94A3B8 50%, #F0F4F8 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 6s linear infinite;
+  font-size: clamp(3.5rem, 8vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  font-family: var(--font-display);
 }
 
 @keyframes shimmer {
@@ -609,12 +604,32 @@ body::before {
 
 .section { padding: 100px 0; position: relative; }
 .page-shell { padding: 160px 0 100px; position: relative; }
-.section--surface { background: var(--bg-elevated); border-block: 1px solid var(--border-subtle); }
+.section--surface { 
+  background: #0B1120; 
+  color: #FFFFFF;
+  border-block: 1px solid rgba(255, 255, 255, 0.05); 
+}
+
+.section--surface .section-heading h2,
+.section--surface .info-card h3,
+.section--surface .section-heading p,
+.section--surface .info-card p {
+  color: #FFFFFF !important;
+}
 
 .section--warm {
-  background: linear-gradient(135deg, #111a2e, #0f1d31);
-  color: var(--text-primary);
-  border-block: 1px solid var(--border-subtle);
+  background: #0B1120;
+  color: #FFFFFF;
+  border-block: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section--warm h1,
+.section--warm h2,
+.section--warm h3,
+.section--warm p,
+.section--warm .section-heading h2,
+.section--warm .section-heading p {
+  color: #FFFFFF !important;
 }
 
 .section--warm h2, .section--warm p { color: var(--text-primary); }
@@ -754,12 +769,18 @@ body::before {
 
 .access-link:hover {
   border-color: var(--accent-indigo);
-  background: var(--bg-card-hover);
+  background: #0B1120;
   transform: translateX(4px);
   box-shadow: var(--shadow-glow-indigo);
+  color: #FFFFFF !important;
 }
 
-.access-link svg:first-child { color: var(--accent-indigo); }
+.access-link:hover small {
+  color: #94A3B8 !important;
+}
+
+.access-link svg:first-child { color: var(--accent-indigo); transition: color 0.2s; }
+.access-link:hover svg:first-child { color: #FFFFFF; }
 .access-link strong, .access-link small { display: block; }
 .access-link small { margin-top: 4px; color: var(--text-secondary); font-size: 0.8125rem; }
 

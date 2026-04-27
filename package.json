@@ -1,1 +1,7 @@
-{}
+{
+  "name": "crisissync-root",
+  "private": true,
+  "scripts": {
+    "dev": "npx concurrently -n \"website,admin,staff,guest\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold,bgYellow.bold\" \"npm --prefix website run dev\" \"npm --prefix admin run dev\" \"npm --prefix staff run dev\" \"npm --prefix guest run dev\""
+  }
+}
