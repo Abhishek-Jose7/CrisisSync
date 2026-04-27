@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { roleLinks } from '../../siteConfig';
 
 const metrics = [
-  { value: '42s', label: 'demo warden ack' },
+  { value: '42s', label: 'avg warden ack time' },
   { value: '8', label: 'live hotel zones' },
   { value: '6', label: 'SOS context types' },
 ];
@@ -32,10 +32,10 @@ export function Home() {
       <section className="hero hero--ops">
         <div className="container ops-hero-grid">
           <div className="hero__content">
-            <span className="eyebrow eyebrow--amber"><Siren size={14} /> Venue incident command, live in minutes</span>
+            <span className="eyebrow eyebrow--coral"><Siren size={14} /> Venue incident command, live in minutes</span>
             <h1>CrisisSync</h1>
             <p className="hero__lead">
-              A zone-based emergency operating layer for venues: guest SOS triage, staff tasking, admin command, QR access, broadcasts, and post-incident records in one linked response chain.
+              A zone-based emergency operating layer for venues — guest SOS triage, staff tasking, admin command, QR access, broadcasts, and post-incident records in one linked response chain.
             </p>
             <div className="hero__actions">
               <a className="btn btn-primary" href={roleLinks.admin.production} target="_blank" rel="noreferrer">
@@ -92,7 +92,7 @@ export function Home() {
       <section className="section section--surface">
         <div className="container split">
           <div>
-            <span className="eyebrow">Connected role surfaces</span>
+            <span className="eyebrow eyebrow--teal">Connected role surfaces</span>
             <h2>Admin, staff, and guests see different screens, but work the same incident.</h2>
             <p>
               Each role operates in its own application with appropriate data boundaries. The admin configures, staff respond, and guests receive guidance — all through separate, purpose-built surfaces.
@@ -132,7 +132,7 @@ export function Home() {
       <section className="section section--warm">
         <div className="container response-flow">
           <div>
-            <span className="eyebrow">SOS without false alarms</span>
+            <span className="eyebrow eyebrow--coral">SOS without false alarms</span>
             <h2>Emergency reports collect context before alerting command.</h2>
             <p>Guests choose the crisis type, whether they are in immediate danger, and how many people are affected. CrisisSync turns that into severity, playbook routing, staff notifications, and a clean audit trail.</p>
           </div>
@@ -151,7 +151,7 @@ export function Home() {
       <section className="section section--compact">
         <div className="container callout-band">
           <div>
-            <Clock size={20} />
+            <Clock size={20} style={{ color: 'var(--accent-indigo)' }} />
             <h2>Test the full system without setup.</h2>
             <p>Demo environments for Admin, Staff, and Guest roles are preloaded with realistic venue data — Grand Orchid Hotel with 5 zones, 7 staff, and configurable incident scenarios.</p>
           </div>

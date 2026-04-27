@@ -5,11 +5,18 @@ const StaffDemoContext = createContext(null);
 
 const BASE_STATE = {
   venueId: 'demo-venue-001',
+  venueName: 'Grand Orchid Hotel',
   mode: 'main',
   staffUser: null,
   zones: [
+    { zoneId: 'zone-lobby', name: 'Ground Floor Lobby', type: 'lobby' },
+    { zoneId: 'zone-kitchen', name: 'Kitchen', type: 'kitchen' },
     { zoneId: 'zone-floor7', name: 'Floor 7', type: 'floor' },
-    { zoneId: 'zone-lobby', name: 'Lobby', type: 'lobby' },
+    { zoneId: 'zone-parking', name: 'Basement Parking', type: 'parking' },
+    { zoneId: 'zone-pool', name: 'Rooftop Pool', type: 'pool' },
+    { zoneId: 'zone-restaurant', name: 'Fine Dining Restaurant', type: 'restaurant' },
+    { zoneId: 'zone-spa', name: 'Wellness Spa & Gym', type: 'spa' },
+    { zoneId: 'zone-conference', name: 'Conference Center', type: 'conference' },
   ],
   activeIncident: null,
   checklist: [
@@ -26,8 +33,14 @@ const BASE_STATE = {
     { tip: 'CO2 extinguisher is located near lift lobby if needed for small electrical fires.', priority: 3 }
   ],
   allZoneStatuses: {
+    'zone-lobby': { statusLabel: 'acknowledged' },
+    'zone-kitchen': { statusLabel: 'notified' },
     'zone-floor7': { statusLabel: 'notified' },
-    'zone-lobby': { statusLabel: 'acknowledged' }
+    'zone-parking': { statusLabel: 'clear' },
+    'zone-pool': { statusLabel: 'clear' },
+    'zone-restaurant': { statusLabel: 'notified' },
+    'zone-spa': { statusLabel: 'clear' },
+    'zone-conference': { statusLabel: 'clear' },
   },
   alertFeed: [],
   timeline: []

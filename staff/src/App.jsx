@@ -5,7 +5,9 @@ import { StaffOnboarding } from './pages/Onboarding';
 import { ZoneHome } from './pages/ZoneHome';
 import { Incident } from './pages/Incident';
 import { MapView } from './pages/MapView';
-import { PlaceholderView } from './pages/PlaceholderView';
+import { CommsPage } from './pages/Comms';
+import { ContactsPage } from './pages/Contacts';
+import { ResourcesPage } from './pages/Resources';
 import { BottomNav } from './components/BottomNav';
 import './index.css';
 import './field-response.css';
@@ -50,9 +52,9 @@ function AppRoutes({ basePath = '', demoMode = false }) {
         <Route index element={<RequireAuth basePath={basePath} demoMode={demoMode}><ZoneHome demoMode={demoMode} /></RequireAuth>} />
         <Route path="incident" element={<RequireAuth basePath={basePath} demoMode={demoMode}><Incident /></RequireAuth>} />
         <Route path="map" element={<RequireAuth basePath={basePath} demoMode={demoMode}><MapView /></RequireAuth>} />
-        <Route path="comms" element={<RequireAuth basePath={basePath} demoMode={demoMode}><PlaceholderView title="Communications" icon="💬" description="Secure warden broadcast channel" /></RequireAuth>} />
-        <Route path="contacts" element={<RequireAuth basePath={basePath} demoMode={demoMode}><PlaceholderView title="Contacts" icon="👥" description="Emergency personnel directory" /></RequireAuth>} />
-        <Route path="resources" element={<RequireAuth basePath={basePath} demoMode={demoMode}><PlaceholderView title="Resources" icon="📄" description="Floor blueprints and safety protocols" /></RequireAuth>} />
+        <Route path="comms" element={<RequireAuth basePath={basePath} demoMode={demoMode}><CommsPage /></RequireAuth>} />
+        <Route path="contacts" element={<RequireAuth basePath={basePath} demoMode={demoMode}><ContactsPage /></RequireAuth>} />
+        <Route path="resources" element={<RequireAuth basePath={basePath} demoMode={demoMode}><ResourcesPage /></RequireAuth>} />
       </Routes>
       {state.staffUser?.profileComplete && <BottomNav basePath={basePath} />}
     </div>

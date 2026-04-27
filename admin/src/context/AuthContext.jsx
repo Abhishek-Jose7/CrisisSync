@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../shared/firebase/config';
+import { getAdminVenueSummary, saveOnboardingToFirestore } from '../services/firestoreData';
 
 const AdminAuthContext = createContext(null);
 
@@ -40,8 +41,13 @@ export function AdminAuthProvider({ children }) {
       const activeUser = firebaseUser || (localSession ? createLocalUser(localSession) : null);
       setUser(activeUser);
       if (activeUser) {
-        setSetupComplete(localStorage.getItem(storageKeyFor(activeUser.uid)) === 'complete');
-        setOrgType(localStorage.getItem(orgTypeKeyFor(activeUser.uid)) || null);
+        getAdminVenueSummary(activeUser.uid).then((venue) => {
+          setSetupComplete(Boolean(venue?.setupComplete) || localStorage.getItem(storageKeyFor(activeUser.uid)) === 'complete');
+          setOrgType(venue?.type || localStorage.getItem(orgTypeKeyFor(activeUser.uid)) || null);
+        }).catch(() => {
+          setSetupComplete(localStorage.getItem(storageKeyFor(activeUser.uid)) === 'complete');
+          setOrgType(localStorage.getItem(orgTypeKeyFor(activeUser.uid)) || null);
+        });
       } else {
         setSetupComplete(false);
         setOrgType(null);
@@ -55,10 +61,11 @@ export function AdminAuthProvider({ children }) {
     setAuthError(null);
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      const complete = localStorage.getItem(storageKeyFor(result.user.uid)) === 'complete';
+      const venue = await getAdminVenueSummary(result.user.uid).catch(() => null);
+      const complete = Boolean(venue?.setupComplete) || localStorage.getItem(storageKeyFor(result.user.uid)) === 'complete';
       setUser(result.user);
       setSetupComplete(complete);
-      setOrgType(localStorage.getItem(orgTypeKeyFor(result.user.uid)) || null);
+      setOrgType(venue?.type || localStorage.getItem(orgTypeKeyFor(result.user.uid)) || null);
       return { user: result.user, setupComplete: complete };
     } catch (error) {
       const localAccounts = readLocalAccounts();
@@ -121,9 +128,12 @@ export function AdminAuthProvider({ children }) {
     setOrgType(firebaseUser ? localStorage.getItem(orgTypeKeyFor(firebaseUser.uid)) || null : null);
   }, []);
 
-  const completeOnboarding = useCallback((selectedOrgType) => {
+  const completeOnboarding = useCallback(async (selectedOrgType, setupPayload) => {
     const current = auth.currentUser || user;
     if (!current) return;
+    if (setupPayload && !current.isLocalFallback) {
+      await saveOnboardingToFirestore(current.uid, setupPayload);
+    }
     localStorage.setItem(storageKeyFor(current.uid), 'complete');
     if (selectedOrgType) {
       localStorage.setItem(orgTypeKeyFor(current.uid), selectedOrgType);

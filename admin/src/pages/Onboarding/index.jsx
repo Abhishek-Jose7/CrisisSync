@@ -1,7 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import QRCode from 'qrcode';
 import { Building2, ShieldCheck, Map, Users, FileText, QrCode, CheckCircle, ArrowRight, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { useAdminAuth } from '../../context/AuthContext';
+import { createStaffInvite, makeId, makeQrToken, venueDocIdFor } from '../../services/firestoreData';
 
 const ORG_TYPES = [
   { id: 'hotel', label: 'Hotel / Resort', icon: '🏨' },
@@ -102,6 +104,36 @@ const STAFF_TEMPLATES = {
 
 const ROLE_LABELS = { admin: 'Admin', dutyManager: 'Duty Manager', warden: 'Warden', seniorWarden: 'Senior Warden' };
 
+const DEFAULT_PLAYBOOKS = [
+  {
+    playbookId: 'fire',
+    crisisType: 'fire',
+    label: 'Fire / Smoke',
+    level1Message: 'Staff are investigating a fire or smoke report near your area. Stay alert and wait for instructions.',
+    level2Message: 'A fire incident is active. Move away from smoke and follow staff instructions.',
+    level3Message: 'EVACUATE NOW. Use stairs only. Do not use lifts.',
+    wardenChecklist: ['Check source if safe', 'Move guests to nearest stairwell', 'Close doors behind you', 'Report headcount to command'],
+  },
+  {
+    playbookId: 'medical',
+    crisisType: 'medical',
+    label: 'Medical Emergency',
+    level1Message: 'A medical response is being coordinated nearby. Keep pathways clear.',
+    level2Message: 'Medical staff are responding. Keep the affected area clear and follow staff directions.',
+    level3Message: 'Urgent medical response active. Clear route for responders immediately.',
+    wardenChecklist: ['Locate affected person', 'Keep crowd clear', 'Call first-aid responder', 'Update command with status'],
+  },
+  {
+    playbookId: 'security',
+    crisisType: 'security',
+    label: 'Security Threat',
+    level1Message: 'Security is investigating a report. Stay calm and avoid the area.',
+    level2Message: 'Security incident active. Move away calmly and follow staff instructions.',
+    level3Message: 'Immediate security threat. Leave the area now if safe to do so.',
+    wardenChecklist: ['Move guests away from threat', 'Avoid confrontation', 'Secure access points', 'Report safe route to command'],
+  },
+];
+
 const STEPS = [
   { id: 0, title: 'Org Type', icon: <Building2 size={16} /> },
   { id: 1, title: 'Details', icon: <Building2 size={16} /> },
@@ -119,24 +151,142 @@ export function OnboardingPage() {
   const [selectedOrg, setSelectedOrg] = useState(null);
   const [venueName, setVenueName] = useState('');
   const [venueAddress, setVenueAddress] = useState('');
+  const [timezone, setTimezone] = useState('Asia/Kolkata');
+  const [zones, setZones] = useState([]);
+  const [staff, setStaff] = useState([]);
+  const [playbooks, setPlaybooks] = useState(DEFAULT_PLAYBOOKS);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
+  const [inviteRole, setInviteRole] = useState('warden');
+  const [inviteZone, setInviteZone] = useState('');
+  const [inviteLink, setInviteLink] = useState('');
+  const [qrImages, setQrImages] = useState({});
   const [complianceChecked, setComplianceChecked] = useState(false);
+  const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const { completeOnboarding, user } = useAdminAuth();
 
-  const zones = useMemo(() => selectedOrg ? (ZONE_TEMPLATES[selectedOrg] || ZONE_TEMPLATES.other) : [], [selectedOrg]);
-  const staff = useMemo(() => selectedOrg ? (STAFF_TEMPLATES[selectedOrg] || STAFF_TEMPLATES.hotel) : [], [selectedOrg]);
+  useEffect(() => {
+    if (!selectedOrg) return;
+    const templateZones = (ZONE_TEMPLATES[selectedOrg] || ZONE_TEMPLATES.other).map((zone) => ({
+      zoneId: makeId('zone'),
+      name: zone.name,
+      type: zone.type,
+      capacity: zone.capacity,
+      riskProfile: zone.risk,
+      exitRoute: zone.exit,
+      assemblyPoint: zone.assembly,
+      notes: '',
+      qrToken: makeQrToken(zone.name),
+    }));
+    setZones(templateZones);
+    setInviteZone(templateZones[0]?.zoneId || '');
+    setStaff([]);
+    setPlaybooks(DEFAULT_PLAYBOOKS);
+  }, [selectedOrg]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function buildCodes() {
+      const guestBase = import.meta.env.VITE_GUEST_URL || window.location.origin.replace('admin', 'guest');
+      const entries = await Promise.all(zones.map(async (zone) => {
+        const url = `${guestBase.replace(/\/$/, '')}/zone/${zone.qrToken}`;
+        const dataUrl = await QRCode.toDataURL(url, { width: 180, margin: 2, errorCorrectionLevel: 'M' });
+        return [zone.zoneId, { dataUrl, url }];
+      }));
+      if (!cancelled) setQrImages(Object.fromEntries(entries));
+    }
+    if (zones.length) buildCodes();
+    return () => { cancelled = true; };
+  }, [zones]);
 
   const handleNext = () => {
     if (step === 0 && !selectedOrg) return;
     setStep(Math.min(step + 1, 8));
   };
   const handleBack = () => setStep(Math.max(step - 1, 0));
-  const handleFinish = () => {
-    completeOnboarding(selectedOrg);
+  const handleFinish = async () => {
+    setSaving(true);
+    const setupPayload = {
+      venue: {
+        name: venueName || `${orgLabel} Venue`,
+        type: selectedOrg,
+        address: venueAddress,
+        timezone,
+        complianceAcknowledged: complianceChecked,
+        settings: {
+          warden_ack_timeout_seconds: 90,
+          admin_command_timeout_seconds: 90,
+          full_escalation_timeout_seconds: 180,
+          level3_requires_human_confirm: true,
+        },
+      },
+      zones,
+      staff,
+      playbooks,
+    };
+    await completeOnboarding(selectedOrg, setupPayload);
     navigate('/command', { replace: true });
+    setSaving(false);
   };
 
   const orgLabel = ORG_TYPES.find(o => o.id === selectedOrg)?.label || 'organization';
+  const venueId = user?.uid ? venueDocIdFor(user.uid) : null;
+
+  function updateZone(zoneId, patch) {
+    setZones(prev => prev.map(zone => zone.zoneId === zoneId ? { ...zone, ...patch } : zone));
+  }
+
+  function addCustomZone() {
+    const zone = {
+      zoneId: makeId('zone'),
+      name: 'New Custom Zone',
+      type: 'other',
+      capacity: 25,
+      riskProfile: 'medium',
+      exitRoute: 'Use nearest marked emergency exit.',
+      assemblyPoint: 'Main assembly point',
+      notes: '',
+      qrToken: makeQrToken('New Custom Zone'),
+    };
+    setZones(prev => [...prev, zone]);
+    setInviteZone(zone.zoneId);
+  }
+
+  async function handleInvite() {
+    if (!inviteEmail || !venueId) return;
+    const member = {
+      staffId: makeId('staff'),
+      name: inviteName || inviteEmail.split('@')[0],
+      email: inviteEmail,
+      role: inviteRole,
+      assignedZones: inviteZone ? [inviteZone] : [],
+      currentShift: 'evening',
+      isOnDuty: false,
+      inviteStatus: 'pending',
+    };
+    setStaff(prev => [...prev, member]);
+    if (!user?.isLocalFallback) {
+      const invite = await createStaffInvite({
+        venueId,
+        staffId: member.staffId,
+        email: inviteEmail,
+        name: member.name,
+        role: inviteRole,
+        assignedZones: member.assignedZones,
+        shift: 'evening',
+      });
+      setInviteLink(invite.inviteUrl);
+    } else {
+      setInviteLink('Invite will sync when Firebase is configured and this admin uses a Firebase account.');
+    }
+    setInviteEmail('');
+    setInviteName('');
+  }
+
+  function updatePlaybook(playbookId, patch) {
+    setPlaybooks(prev => prev.map(book => book.playbookId === playbookId ? { ...book, ...patch } : book));
+  }
 
   return (
     <div className="onboarding-screen">
@@ -217,7 +367,7 @@ export function OnboardingPage() {
                 </div>
                 <div className="onboarding-field">
                   <label>Timezone</label>
-                  <select defaultValue="Asia/Kolkata">
+                  <select value={timezone} onChange={e => setTimezone(e.target.value)}>
                     <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
                     <option value="America/New_York">America/New_York (EST)</option>
                     <option value="Europe/London">Europe/London (GMT)</option>
@@ -233,44 +383,67 @@ export function OnboardingPage() {
               <h2>Zone Builder</h2>
               <p className="step-desc">Preloaded zones for <strong>{orgLabel}</strong>. Review and customize as needed.</p>
               <div className="zone-template-list">
-                {zones.map((zone, i) => (
-                  <div key={i} className="zone-template-item">
+                {zones.map((zone) => (
+                  <div key={zone.zoneId} className="zone-template-item">
                     <div className="zone-template-info">
-                      <strong>{zone.name}</strong>
+                      <input value={zone.name} onChange={e => updateZone(zone.zoneId, { name: e.target.value })} className="inline-input" aria-label="Zone name" />
                       <span className="zone-meta">
-                        {zone.type} · {zone.capacity} capacity · {zone.risk} risk
+                        <select value={zone.type} onChange={e => updateZone(zone.zoneId, { type: e.target.value })} aria-label="Zone type">
+                          <option value="lobby">lobby</option>
+                          <option value="floor">floor</option>
+                          <option value="kitchen">kitchen</option>
+                          <option value="parking">parking</option>
+                          <option value="dining">dining</option>
+                          <option value="other">other</option>
+                        </select>
+                        <input type="number" min="1" value={zone.capacity} onChange={e => updateZone(zone.zoneId, { capacity: Number(e.target.value) })} aria-label="Capacity" />
+                        <select value={zone.riskProfile} onChange={e => updateZone(zone.zoneId, { riskProfile: e.target.value })} aria-label="Risk profile">
+                          <option value="low">low risk</option>
+                          <option value="medium">medium risk</option>
+                          <option value="high">high risk</option>
+                        </select>
                       </span>
                     </div>
                     <div className="zone-template-detail">
-                      <small><strong>Exit:</strong> {zone.exit}</small>
-                      <small><strong>Assembly:</strong> {zone.assembly}</small>
+                      <label><strong>Exit</strong><input value={zone.exitRoute} onChange={e => updateZone(zone.zoneId, { exitRoute: e.target.value })} /></label>
+                      <label><strong>Assembly</strong><input value={zone.assemblyPoint} onChange={e => updateZone(zone.zoneId, { assemblyPoint: e.target.value })} /></label>
                     </div>
                   </div>
                 ))}
               </div>
-              <button type="button" className="btn-add-zone">+ Add Custom Zone</button>
+              <button type="button" className="btn-add-zone" onClick={addCustomZone}>+ Add Custom Zone</button>
             </div>
           )}
 
           {step === 4 && (
             <div className="onboarding-step-body">
               <h2>Staff Assignment</h2>
-              <p className="step-desc">Preloaded staff for {orgLabel}. Invite additional wardens and managers.</p>
+              <p className="step-desc">Invite staff and assign each person to a role, zone, and shift. No dummy staff is added to real venues.</p>
               <div className="staff-template-list">
-                {staff.map((s, i) => (
-                  <div key={i} className="staff-template-item">
+                {staff.length === 0 && <p className="step-desc">No staff invited yet. Add your first warden or manager below.</p>}
+                {staff.map((s) => (
+                  <div key={s.staffId} className="staff-template-item">
                     <div className="staff-avatar">{s.name.charAt(0)}</div>
                     <div>
                       <strong>{s.name}</strong>
-                      <span className="staff-meta">{ROLE_LABELS[s.role]} · {s.zone}</span>
+                      <span className="staff-meta">{ROLE_LABELS[s.role]} · {zones.find(z => z.zoneId === s.assignedZones?.[0])?.name || 'No zone'} · {s.inviteStatus || 'draft'}</span>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="invite-row">
-                <input type="email" placeholder="warden@company.com" className="invite-input" />
-                <button type="button" className="invite-btn">Invite</button>
+                <input type="text" placeholder="Name" className="invite-input" value={inviteName} onChange={e => setInviteName(e.target.value)} />
+                <input type="email" placeholder="warden@company.com" className="invite-input" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} />
+                <select className="invite-input" value={inviteRole} onChange={e => setInviteRole(e.target.value)}>
+                  {Object.entries(ROLE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+                <select className="invite-input" value={inviteZone} onChange={e => setInviteZone(e.target.value)}>
+                  <option value="">Command-wide</option>
+                  {zones.map(zone => <option key={zone.zoneId} value={zone.zoneId}>{zone.name}</option>)}
+                </select>
+                <button type="button" className="invite-btn" onClick={handleInvite}>Invite</button>
               </div>
+              {inviteLink && <div className="invite-link" role="status">Invite link: <span>{inviteLink}</span></div>}
             </div>
           )}
 
@@ -279,12 +452,15 @@ export function OnboardingPage() {
               <h2>Playbook Configuration</h2>
               <p className="step-desc">Escalation rules and autonomous response settings.</p>
               <div className="playbook-list">
-                <PlaybookRow label="Warden acknowledgment timeout" value="90 seconds" />
-                <PlaybookRow label="Admin command timeout → Duty Manager" value="90 seconds" />
-                <PlaybookRow label="Full escalation → Senior Warden + Autonomous" value="180 seconds" />
-                <PlaybookRow label="Level 3 requires human confirmation" value="Enabled" toggle />
-                <PlaybookRow label="SOS cluster threshold (auto-escalate)" value="3 SOSs in 2 min" />
-                <PlaybookRow label="Per-session SOS limit" value="3 per guest" />
+                {playbooks.map((book) => (
+                  <div className="playbook-editor" key={book.playbookId}>
+                    <input className="inline-input" value={book.label} onChange={e => updatePlaybook(book.playbookId, { label: e.target.value })} />
+                    <label>Level 1<input value={book.level1Message} onChange={e => updatePlaybook(book.playbookId, { level1Message: e.target.value })} /></label>
+                    <label>Level 2<input value={book.level2Message} onChange={e => updatePlaybook(book.playbookId, { level2Message: e.target.value })} /></label>
+                    <label>Level 3<input value={book.level3Message} onChange={e => updatePlaybook(book.playbookId, { level3Message: e.target.value })} /></label>
+                    <label>Checklist<textarea value={book.wardenChecklist.join('\n')} onChange={e => updatePlaybook(book.playbookId, { wardenChecklist: e.target.value.split('\n').filter(Boolean) })} /></label>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -296,13 +472,16 @@ export function OnboardingPage() {
                 {zones.length} zone-specific QR codes will be generated for your {orgLabel.toLowerCase()}.
               </p>
               <div className="qr-preview-grid">
-                {zones.slice(0, 6).map((zone, i) => (
-                  <div key={i} className="qr-preview-card">
-                    <div className="qr-placeholder">
-                      <QrCode size={48} />
-                    </div>
+                {zones.map((zone) => (
+                  <div key={zone.zoneId} className="qr-preview-card">
+                    {qrImages[zone.zoneId]?.dataUrl ? (
+                      <img src={qrImages[zone.zoneId].dataUrl} alt={`Scannable QR for ${zone.name}`} className="qr-image" />
+                    ) : (
+                      <div className="qr-placeholder"><QrCode size={48} /></div>
+                    )}
                     <strong>{zone.name}</strong>
-                    <code className="qr-token">{zone.name.toLowerCase().replace(/[\s/()]+/g, '-').slice(0, 12)}-{Math.random().toString(36).slice(2,6)}</code>
+                    <code className="qr-token">{zone.qrToken}</code>
+                    <small className="qr-url">{qrImages[zone.zoneId]?.url}</small>
                   </div>
                 ))}
               </div>
@@ -342,7 +521,7 @@ export function OnboardingPage() {
               <h2>System Ready</h2>
               <p className="step-desc">
                 Your {orgLabel.toLowerCase()} emergency coordination network is configured and ready.
-                {zones.length} zones, {staff.length} staff members, and automated escalation rules are active.
+                {zones.length} zones, {staff.length} staff invitations, and {playbooks.length} editable playbooks are ready to save to Firebase.
               </p>
             </div>
           )}
@@ -370,9 +549,9 @@ export function OnboardingPage() {
               onClick={handleFinish}
               className="onboarding-nav-btn finish"
               type="button"
-              disabled={!complianceChecked}
+              disabled={!complianceChecked || saving}
             >
-              Enter Command Center <ArrowRight size={16} />
+              {saving ? 'Saving to Firebase...' : 'Enter Command Center'} <ArrowRight size={16} />
             </button>
           )}
         </div>

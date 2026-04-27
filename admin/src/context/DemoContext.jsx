@@ -1,5 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useReducer, useCallback } from 'react';
+import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
+import { auth } from '../../../shared/firebase/config';
+import { subscribeVenueData, updatePlaybook, updateStaffMember } from '../services/firestoreData';
 
 const DemoContext = createContext(null);
 
@@ -210,6 +212,34 @@ const INITIAL_STATE = {
   ],
 };
 
+const EMPTY_STATE = {
+  venue: {
+    venueId: null,
+    name: 'Unconfigured Venue',
+    type: 'other',
+    address: '',
+    timezone: 'Asia/Kolkata',
+    setupComplete: false,
+    complianceAcknowledged: false,
+    settings: {
+      warden_ack_timeout_seconds: 90,
+      admin_command_timeout_seconds: 90,
+      full_escalation_timeout_seconds: 180,
+      level3_requires_human_confirm: true,
+    },
+  },
+  zones: [],
+  staff: [],
+  playbooks: [],
+  activeIncident: null,
+  zoneStatuses: {},
+  alertFeed: [],
+  timeline: [],
+  aiSuggestions: [],
+  cameraEvents: [],
+  loading: true,
+};
+
 function generateId() {
   return Math.random().toString(36).slice(2, 11);
 }
@@ -263,14 +293,47 @@ function demoReducer(state, action) {
         timestamp: now(),
       };
 
+      const triggerZone = state.zones.find(z => z.zoneId === (triggeredByZoneId || state.zones[0].zoneId));
+
+      const aiSuggestions = [
+        {
+          id: `ai-${generateId()}`,
+          type: 'response_recommendation',
+          text: `${crisisType === 'fire' ? 'Smoke spreading from ' + (triggerZone?.name || 'affected zone') + '. Recommend isolating elevators and routing guests to stairwells.' : crisisType === 'medical' ? 'Medical emergency at ' + (triggerZone?.name || 'zone') + '. Nearest AED is at reception desk. Ambulance staging at Gate B.' : crisisType === 'security' ? 'Security event at ' + (triggerZone?.name || 'zone') + '. Silent alert activated. Recommend zone containment.' : 'Flooding detected at ' + (triggerZone?.name || 'zone') + '. Check electrical panels and drainage systems.'}`,
+          urgency: severity >= 3 ? 'high' : 'medium',
+          data: `Zone: ${triggerZone?.name || 'Zone'} | Severity: Level ${severity || 2}`,
+          timestamp: now(),
+        },
+        {
+          id: `ai-${generateId()}`,
+          type: 'capacity_warning',
+          text: `${triggerZone?.name || 'Zone'} has ${triggerZone?.capacity || 0} max capacity. Ensure evacuation routes can handle full load.`,
+          urgency: 'medium',
+          data: `Exit route: ${triggerZone?.exitRoute || 'Check venue map'}`,
+          timestamp: now(),
+        },
+      ];
+
+      const cameraEvents = [
+        {
+          id: `cam-${generateId()}`,
+          cameraId: `CAM-${(triggerZone?.type || 'zone').toUpperCase()}-01`,
+          location: triggerZone?.name || 'Affected Zone',
+          observation: crisisType === 'fire' ? 'Smoke detected in corridor' : crisisType === 'medical' ? 'Person down detected' : 'Unusual activity detected',
+          confidence: 89,
+          timestamp: now(),
+          isSimulated: true,
+        },
+      ];
+
       return {
         ...state,
         activeIncident: incident,
         zoneStatuses,
         timeline: [timelineEntry],
         alertFeed: [],
-        aiSuggestions: [],
-        cameraEvents: [],
+        aiSuggestions,
+        cameraEvents,
       };
     }
 
@@ -452,13 +515,60 @@ function demoReducer(state, action) {
       return INITIAL_STATE;
     }
 
+    case 'LOAD_FIRESTORE': {
+      const payload = action.payload;
+      if (!payload) return { ...EMPTY_STATE, loading: false };
+      return {
+        ...state,
+        ...payload,
+        activeIncident: state.activeIncident,
+        zoneStatuses: state.zoneStatuses,
+        alertFeed: state.alertFeed,
+        timeline: state.timeline,
+        aiSuggestions: state.aiSuggestions,
+        cameraEvents: state.cameraEvents,
+        loading: false,
+      };
+    }
+
+    case 'UPDATE_STAFF_LOCAL': {
+      const { staffId, patch } = action.payload;
+      return {
+        ...state,
+        staff: state.staff.map(member => member.staffId === staffId ? { ...member, ...patch } : member),
+      };
+    }
+
+    case 'UPDATE_PLAYBOOK_LOCAL': {
+      const { playbookId, patch } = action.payload;
+      return {
+        ...state,
+        playbooks: state.playbooks.map(book => book.playbookId === playbookId ? { ...book, ...patch } : book),
+      };
+    }
+
     default:
       return state;
   }
 }
 
-export function DemoProvider({ children }) {
-  const [state, dispatch] = useReducer(demoReducer, INITIAL_STATE);
+export function DemoProvider({ children, seedDemo = true }) {
+  const [state, dispatch] = useReducer(demoReducer, seedDemo ? INITIAL_STATE : EMPTY_STATE);
+
+  useEffect(() => {
+    if (seedDemo) return undefined;
+    const uid = auth.currentUser?.uid;
+    if (!uid) {
+      dispatch({ type: 'LOAD_FIRESTORE', payload: null });
+      return undefined;
+    }
+    return subscribeVenueData(uid, (payload) => {
+      dispatch({ type: 'LOAD_FIRESTORE', payload });
+    }, (error) => {
+      console.error(error);
+      dispatch({ type: 'LOAD_FIRESTORE', payload: null });
+    });
+  }, [seedDemo]);
 
   const actions = {
     startIncident: useCallback((payload) => dispatch({ type: 'START_INCIDENT', payload }), []),
@@ -471,6 +581,18 @@ export function DemoProvider({ children }) {
     addCameraEvent: useCallback((payload) => dispatch({ type: 'ADD_CAMERA_EVENT', payload }), []),
     resolveIncident: useCallback(() => dispatch({ type: 'RESOLVE_INCIDENT' }), []),
     reset: useCallback(() => dispatch({ type: 'RESET' }), []),
+    updateStaffMember: useCallback(async ({ staffId, patch }) => {
+      dispatch({ type: 'UPDATE_STAFF_LOCAL', payload: { staffId, patch } });
+      if (!seedDemo && state.venue?.venueId) {
+        await updateStaffMember(state.venue.venueId, staffId, patch);
+      }
+    }, [seedDemo, state.venue?.venueId]),
+    updatePlaybook: useCallback(async ({ playbookId, patch }) => {
+      dispatch({ type: 'UPDATE_PLAYBOOK_LOCAL', payload: { playbookId, patch } });
+      if (!seedDemo && state.venue?.venueId) {
+        await updatePlaybook(state.venue.venueId, playbookId, patch);
+      }
+    }, [seedDemo, state.venue?.venueId]),
   };
 
   return (

@@ -12,6 +12,7 @@ export default defineConfig({
     alias: {
       '@shared': path.resolve(__dirname, '../shared'),
       '@': path.resolve(__dirname, 'src'),
+      firebase: path.resolve(__dirname, 'node_modules/firebase'),
     },
   },
   server: {

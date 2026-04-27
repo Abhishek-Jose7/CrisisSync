@@ -358,7 +358,9 @@ function QRStep({ zones, venue }) {
     let cancelled = false;
     async function buildCodes() {
       const entries = await Promise.all(zones.map(async (zone) => {
-        const guestUrl = `${window.location.origin.replace('admin', 'guest')}/demo/${zone.qrToken || zone.zoneId}`;
+        const guestBase = (import.meta.env.VITE_GUEST_URL || window.location.origin.replace('admin', 'guest')).replace(/\/$/, '');
+        const demoPrefix = window.location.pathname.startsWith('/demo') ? '/demo' : '/zone';
+        const guestUrl = `${guestBase}${demoPrefix}/${zone.qrToken || zone.zoneId}`;
         const dataUrl = await QRCode.toDataURL(guestUrl, {
           margin: 2,
           width: 176,

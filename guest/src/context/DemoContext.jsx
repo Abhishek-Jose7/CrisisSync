@@ -32,6 +32,34 @@ const ZONES_BY_TOKEN = {
     exitRoute: 'Follow green pedestrian walkways to Level 0. Do not use vehicle ramps.',
     assemblyPoint: 'Street level, Gate A',
   },
+  'pool-mno345': {
+    venueName: 'Grand Orchid Hotel',
+    zoneId: 'zone-pool',
+    zoneName: 'Rooftop Pool',
+    exitRoute: 'Exit through rooftop fire door to Stairwell C. Do not use lifts.',
+    assemblyPoint: 'Car park entrance, Level 0, Gate A',
+  },
+  'restaurant-pqr678': {
+    venueName: 'Grand Orchid Hotel',
+    zoneId: 'zone-restaurant',
+    zoneName: 'Fine Dining Restaurant',
+    exitRoute: 'Exit through restaurant terrace doors to garden. Proceed to west gate.',
+    assemblyPoint: 'Garden terrace, west side',
+  },
+  'spa-stu901': {
+    venueName: 'Grand Orchid Hotel',
+    zoneId: 'zone-spa',
+    zoneName: 'Wellness Spa & Gym',
+    exitRoute: 'Exit through spa main entrance to corridor. Turn right to main lobby.',
+    assemblyPoint: 'Main lobby, ground level',
+  },
+  'conference-vwx234': {
+    venueName: 'Grand Orchid Hotel',
+    zoneId: 'zone-conference',
+    zoneName: 'Conference Center',
+    exitRoute: 'Use conference center emergency exits. Proceed to main plaza.',
+    assemblyPoint: 'Main entrance plaza',
+  },
 };
 
 const DEFAULT_ZONE = ZONES_BY_TOKEN['floor7-ghi789'];

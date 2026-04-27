@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
-import { AlertTriangle, Bell, CheckCircle2, ClipboardList, FileText, MapPinned, Radio, Users } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import QRCode from 'qrcode';
+import { AlertTriangle, Bell, CheckCircle2, ClipboardList, FileText, MapPinned, QrCode, Radio, Users } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
 import { ZoneCard } from '../../components/ZoneGrid/ZoneCard';
 
@@ -85,6 +86,24 @@ export function IncidentsPage() {
 
 export function ZonesPage() {
   const { state } = useDemo();
+  const [qrImages, setQrImages] = useState({});
+
+  useEffect(() => {
+    let cancelled = false;
+    async function build() {
+      const guestBase = (import.meta.env.VITE_GUEST_URL || window.location.origin.replace('admin', 'guest')).replace(/\/$/, '');
+      const isDemo = window.location.pathname.startsWith('/demo');
+      const entries = await Promise.all(state.zones.map(async (zone) => {
+        const url = `${guestBase}${isDemo ? '/demo' : '/zone'}/${zone.qrToken || zone.zoneId}`;
+        const dataUrl = await QRCode.toDataURL(url, { width: 152, margin: 2, errorCorrectionLevel: 'M' });
+        return [zone.zoneId, { dataUrl, url }];
+      }));
+      if (!cancelled) setQrImages(Object.fromEntries(entries));
+    }
+    if (state.zones.length) build();
+    return () => { cancelled = true; };
+  }, [state.zones]);
+
   return (
     <PageShell icon={MapPinned} eyebrow="Zones and QR sessions" title="Operational zone map">
       <div className="ops-grid ops-grid--three">
@@ -94,7 +113,13 @@ export function ZonesPage() {
       </div>
       <div className="ops-zone-grid">
         {state.zones.map(zone => (
-          <ZoneCard key={zone.zoneId} zone={zone} status={state.zoneStatuses[zone.zoneId]} sosCount={state.alertFeed.filter(a => a.zoneId === zone.zoneId).length} />
+          <div key={zone.zoneId} className="ops-zone-with-qr">
+            <ZoneCard zone={zone} status={state.zoneStatuses[zone.zoneId]} sosCount={state.alertFeed.filter(a => a.zoneId === zone.zoneId).length} />
+            <div className="ops-qr-strip">
+              {qrImages[zone.zoneId]?.dataUrl ? <img src={qrImages[zone.zoneId].dataUrl} alt={`Scannable QR for ${zone.name}`} /> : <QrCode size={42} />}
+              <code>{zone.qrToken}</code>
+            </div>
+          </div>
         ))}
       </div>
     </PageShell>
@@ -102,7 +127,7 @@ export function ZonesPage() {
 }
 
 export function StaffPage() {
-  const { state } = useDemo();
+  const { state, actions } = useDemo();
   const [filter, setFilter] = useState('active');
   const visibleStaff = state.staff.filter(member => filter === 'all' || member.isOnDuty);
 
@@ -123,7 +148,18 @@ export function StaffPage() {
               <div className="ops-avatar">{member.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</div>
               <div>
                 <strong>{member.name}</strong>
-                <span>{member.role} · {member.currentShift}</span>
+                <span>
+                  <select value={member.role} onChange={e => actions.updateStaffMember({ staffId: member.staffId, patch: { role: e.target.value } })} aria-label={`Role for ${member.name}`}>
+                    <option value="admin">Admin</option>
+                    <option value="dutyManager">Duty Manager</option>
+                    <option value="seniorWarden">Senior Warden</option>
+                    <option value="warden">Warden</option>
+                  </select>
+                  <select value={member.assignedZones?.[0] || ''} onChange={e => actions.updateStaffMember({ staffId: member.staffId, patch: { assignedZones: e.target.value ? [e.target.value] : [] } })} aria-label={`Zone for ${member.name}`}>
+                    <option value="">Command-wide</option>
+                    {state.zones.map(zone => <option key={zone.zoneId} value={zone.zoneId}>{zone.name}</option>)}
+                  </select>
+                </span>
                 <small>{zones}</small>
               </div>
               <span className={`ops-badge ${member.isOnDuty ? 'is-safe' : ''}`}>{member.isOnDuty ? 'Active' : 'Off duty'}</span>
@@ -136,16 +172,21 @@ export function StaffPage() {
 }
 
 export function PlaybooksPage() {
+  const { state, actions } = useDemo();
+  const editablePlaybooks = state.playbooks?.length ? state.playbooks : playbooks;
   return (
     <PageShell icon={ClipboardList} eyebrow="Response logic" title="Playbooks and staff checklists">
       <div className="ops-playbook-grid">
-        {playbooks.map(book => (
+        {editablePlaybooks.map(book => (
           <article className="ops-panel" key={book.type}>
-            <div className="ops-panel__head"><h2>{book.label}</h2><span>{book.owner}</span></div>
-            <p className="ops-muted">{book.route}</p>
-            <div className="ops-message"><Radio size={14} /> Guest broadcast: {book.message}</div>
+            <div className="ops-panel__head">
+              <input className="ops-edit-input" value={book.label} onChange={e => actions.updatePlaybook({ playbookId: book.playbookId || book.type, patch: { label: e.target.value } })} />
+              <span>{book.owner || book.crisisType}</span>
+            </div>
+            <textarea className="ops-edit-area" value={book.route || book.level2Message || ''} onChange={e => actions.updatePlaybook({ playbookId: book.playbookId || book.type, patch: { route: e.target.value, level2Message: e.target.value } })} aria-label={`${book.label} routing`} />
+            <div className="ops-message"><Radio size={14} /> Guest broadcast: {book.message || book.level3Message}</div>
             <ul className="ops-checklist">
-              {sampleTasks.map(task => <li key={task}><CheckCircle2 size={14} /> {task}</li>)}
+              {(book.wardenChecklist || sampleTasks).map(task => <li key={task}><CheckCircle2 size={14} /> {task}</li>)}
             </ul>
           </article>
         ))}

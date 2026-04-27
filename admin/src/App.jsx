@@ -55,7 +55,7 @@ function RequireAdmin({ children, requireSetup = true }) {
 function ProductionWorkspace() {
   return (
     <RequireAdmin>
-      <DemoProvider>
+      <DemoProvider seedDemo={false}>
         <AppLayout>
           <WorkspaceRoutes />
         </AppLayout>
@@ -66,7 +66,7 @@ function ProductionWorkspace() {
 
 function DemoWorkspace() {
   return (
-    <DemoProvider>
+      <DemoProvider>
       <AppLayout>
         <WorkspaceRoutes />
       </AppLayout>

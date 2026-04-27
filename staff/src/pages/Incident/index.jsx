@@ -33,7 +33,7 @@ export function Incident() {
               <div style={{ fontSize: '1.125rem', fontWeight: 800 }}>{actInc.crisisType} - LEVEL {actInc.severity} <span style={{ color: 'var(--severity-3)' }}>HIGH</span></div>
             </div>
           </div>
-          <div style={{ fontSize: '0.75rem', fontWeight: 500 }}>10:24 AM</div>
+          <div style={{ fontSize: '0.75rem', fontWeight: 500 }}>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
         </div>
 
         {/* Tabs */}
