@@ -7,6 +7,25 @@ const AdminAuthContext = createContext(null);
 
 const storageKeyFor = (uid) => `crisissync:admin:onboarding:${uid}`;
 const orgTypeKeyFor = (uid) => `crisissync:admin:orgtype:${uid}`;
+const localAccountsKey = 'crisissync:admin:localAccounts';
+const localSessionKey = 'crisissync:admin:localSession';
+
+function readLocalAccounts() {
+  try {
+    return JSON.parse(localStorage.getItem(localAccountsKey) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function createLocalUser(email) {
+  return {
+    uid: `local-${email.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    email,
+    displayName: email.split('@')[0],
+    isLocalFallback: true,
+  };
+}
 
 export function AdminAuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -17,10 +36,12 @@ export function AdminAuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      if (firebaseUser) {
-        setSetupComplete(localStorage.getItem(storageKeyFor(firebaseUser.uid)) === 'complete');
-        setOrgType(localStorage.getItem(orgTypeKeyFor(firebaseUser.uid)) || null);
+      const localSession = !firebaseUser ? localStorage.getItem(localSessionKey) : null;
+      const activeUser = firebaseUser || (localSession ? createLocalUser(localSession) : null);
+      setUser(activeUser);
+      if (activeUser) {
+        setSetupComplete(localStorage.getItem(storageKeyFor(activeUser.uid)) === 'complete');
+        setOrgType(localStorage.getItem(orgTypeKeyFor(activeUser.uid)) || null);
       } else {
         setSetupComplete(false);
         setOrgType(null);
@@ -40,6 +61,17 @@ export function AdminAuthProvider({ children }) {
       setOrgType(localStorage.getItem(orgTypeKeyFor(result.user.uid)) || null);
       return { user: result.user, setupComplete: complete };
     } catch (error) {
+      const localAccounts = readLocalAccounts();
+      const localAccount = localAccounts[email.toLowerCase()];
+      if (localAccount?.password === password) {
+        const localUser = createLocalUser(email);
+        localStorage.setItem(localSessionKey, email.toLowerCase());
+        const complete = localStorage.getItem(storageKeyFor(localUser.uid)) === 'complete';
+        setUser(localUser);
+        setSetupComplete(complete);
+        setOrgType(localStorage.getItem(orgTypeKeyFor(localUser.uid)) || null);
+        return { user: localUser, setupComplete: complete };
+      }
       const msg = error.code === 'auth/user-not-found' ? 'No account found with this email.'
         : error.code === 'auth/wrong-password' ? 'Incorrect password.'
         : error.code === 'auth/invalid-credential' ? 'Invalid email or password.'
@@ -58,6 +90,22 @@ export function AdminAuthProvider({ children }) {
       setSetupComplete(false);
       return { user: result.user, setupComplete: false };
     } catch (error) {
+      if (!['auth/email-already-in-use', 'auth/weak-password', 'auth/invalid-email'].includes(error.code)) {
+        const accounts = readLocalAccounts();
+        const key = email.toLowerCase();
+        if (accounts[key]) {
+          const msg = 'An account with this email already exists.';
+          setAuthError(msg);
+          throw new Error(msg);
+        }
+        accounts[key] = { email, password, createdAt: new Date().toISOString() };
+        localStorage.setItem(localAccountsKey, JSON.stringify(accounts));
+        localStorage.setItem(localSessionKey, key);
+        const localUser = createLocalUser(email);
+        setUser(localUser);
+        setSetupComplete(false);
+        return { user: localUser, setupComplete: false };
+      }
       const msg = error.code === 'auth/email-already-in-use' ? 'An account with this email already exists.'
         : error.code === 'auth/weak-password' ? 'Password must be at least 6 characters.'
         : error.code === 'auth/invalid-email' ? 'Invalid email address.'
@@ -85,7 +133,8 @@ export function AdminAuthProvider({ children }) {
   }, [user]);
 
   const logout = useCallback(async () => {
-    await signOut(auth);
+    localStorage.removeItem(localSessionKey);
+    await signOut(auth).catch(() => {});
     setUser(null);
     setSetupComplete(false);
     setOrgType(null);

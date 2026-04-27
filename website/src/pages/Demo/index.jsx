@@ -1,4 +1,4 @@
-import { ArrowRight, Building2, MapPinned, MonitorPlay, Users } from 'lucide-react';
+import { ArrowRight, Bell, Building2, CheckCircle2, Flame, MapPinned, MonitorPlay, Users } from 'lucide-react';
 import { guestDemoZones, roleLinks } from '../../siteConfig';
 
 const demoLinks = [
@@ -34,6 +34,13 @@ export function Demo() {
           </p>
         </div>
 
+        <div className="visual-strip">
+          <div className="visual-pill"><strong>Admin</strong><span>8 populated routes</span></div>
+          <div className="visual-pill"><strong>Staff</strong><span>active incident demo</span></div>
+          <div className="visual-pill"><strong>Guest</strong><span>4-step SOS flow</span></div>
+          <div className="visual-pill"><strong>QR</strong><span>zone-token sessions</span></div>
+        </div>
+
         <div className="card-grid card-grid--three" style={{ marginBottom: '32px' }}>
           {demoLinks.map((demo) => {
             const Icon = demo.icon;
@@ -46,6 +53,24 @@ export function Demo() {
                   Open demo <ArrowRight size={14} />
                 </a>
               </article>
+            );
+          })}
+        </div>
+
+        <div className="mini-flow" style={{ marginBottom: 32 }}>
+          {[
+            { icon: Flame, title: 'Guest selects emergency type', meta: 'fire' },
+            { icon: Bell, title: 'Command receives context', meta: 'severity' },
+            { icon: Users, title: 'Staff checklist updates', meta: 'live' },
+            { icon: CheckCircle2, title: 'Report timeline records it', meta: 'audit' },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <div className="mini-flow__item" key={item.title}>
+                <Icon size={18} />
+                <strong>{item.title}</strong>
+                <span>{item.meta}</span>
+              </div>
             );
           })}
         </div>

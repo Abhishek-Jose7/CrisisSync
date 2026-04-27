@@ -6,11 +6,15 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
+  envDir: '..',
   plugins: [react()],
   resolve: {
     alias: {
       '@shared': path.resolve(__dirname, '../shared'),
       '@': path.resolve(__dirname, 'src'),
     },
+  },
+  optimizeDeps: {
+    include: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/analytics', 'firebase/functions'],
   },
 })

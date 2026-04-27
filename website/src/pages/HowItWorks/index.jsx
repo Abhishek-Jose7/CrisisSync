@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bell, CheckCircle2, ClipboardList, MapPinned, QrCode, Radio, ShieldAlert, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const steps = [
@@ -10,6 +10,13 @@ const steps = [
   { number: '06', title: 'Escalation chain', text: 'If admin is silent for 90s → duty manager notified. If both silent for 3min → senior warden takes command and autonomous playbook activates. No communication gap.' },
   { number: '07', title: 'Guest guidance', text: 'Based on severity level, guests receive appropriate instructions: Level 1 = reassurance, Level 2 = shelter instructions, Level 3 = full evacuation with specific routes. AI translates to guest\'s language.' },
   { number: '08', title: 'Resolution & report', text: 'Incident is marked resolved. System generates a timeline-backed post-incident report with zone statuses, warden actions, SOS logs, and AI-generated insights for compliance review.' },
+];
+
+const flow = [
+  { icon: QrCode, title: 'Scan zone QR', meta: 'guest' },
+  { icon: ShieldAlert, title: 'Answer SOS context', meta: 'triage' },
+  { icon: Bell, title: 'Notify exact staff', meta: 'routing' },
+  { icon: ClipboardList, title: 'Complete zone tasks', meta: 'response' },
 ];
 
 export function HowItWorks() {
@@ -24,14 +31,45 @@ export function HowItWorks() {
           </p>
         </div>
 
-        <div className="card-grid card-grid--two" style={{ marginBottom: '40px' }}>
-          {steps.map((step) => (
-            <article className="info-card" key={step.number}>
-              <span style={{ color: 'var(--status-safe)', fontWeight: 800, fontSize: '0.8125rem' }}>{step.number}</span>
+        <div className="mini-flow" style={{ marginBottom: 32 }}>
+          {flow.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div className="mini-flow__item" key={item.title}>
+                <Icon size={18} />
+                <strong>{item.title}</strong>
+                <span>{item.meta}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="process-rail">
+          {steps.slice(0, 4).map((step) => (
+            <article className="process-step" key={step.number}>
+              <span>{step.number}</span>
               <h3>{step.title}</h3>
               <p>{step.text}</p>
             </article>
           ))}
+        </div>
+
+        <div className="card-grid card-grid--four" style={{ marginBottom: '40px' }}>
+          {[
+            { icon: Radio, title: 'Live command', text: 'Admins see severity, SOS context, affected zones, and acknowledgments.' },
+            { icon: Users, title: 'Staff action', text: 'Wardens update status and checklist progress from their PWA.' },
+            { icon: MapPinned, title: 'Guest guidance', text: 'Guests receive route and assembly guidance tied to their QR zone.' },
+            { icon: CheckCircle2, title: 'Audit trail', text: 'Every action becomes a timestamped incident record.' },
+          ].map((card) => {
+            const Icon = card.icon;
+            return (
+              <article className="info-card" key={card.title}>
+                <Icon size={22} />
+                <h3>{card.title}</h3>
+                <p>{card.text}</p>
+              </article>
+            );
+          })}
         </div>
 
         <div className="callout-band">

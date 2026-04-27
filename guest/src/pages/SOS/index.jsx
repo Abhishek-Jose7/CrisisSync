@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useGuestDemo } from '../../context/DemoContext';
 import { ArrowLeft, AlertTriangle, Flame, Heart, Shield, Droplets, Zap, MoreHorizontal, Users, Clock, Check } from 'lucide-react';
 import { 
-  generateAriaLabel, 
   handleKeyDown, 
   announceToScreenReader, 
   triggerHaptic,
   trapFocus 
-} from '../../../shared/accessibility';
+} from '../../../../shared/accessibility';
 
 const crisisTypes = [
   { id: 'fire', icon: Flame, label: 'Fire', color: '#dc4242', description: 'Fire, smoke, or burning smell' },
@@ -93,7 +92,7 @@ export function SOS({ basePath = '' }) {
     announceToScreenReader('Sending emergency alert', 'assertive');
 
     // Send the detailed SOS
-    await actions.sendDetailedSOS({
+    actions.sendDetailedSos({
       crisisType: selectedCrisis.id,
       urgency: dangerLevel.id === 'immediate' ? 'high' : 'medium',
       affectedCount: affectedCount.count,

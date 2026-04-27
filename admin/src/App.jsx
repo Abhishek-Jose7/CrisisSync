@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CommandPage } from './pages/Command';
 import { SetupPage } from './pages/Setup';
 import { AnalyticsPage } from './pages/Analytics';
-import { PlaceholderView } from './pages/PlaceholderView';
+import { IncidentsPage, ZonesPage, StaffPage, PlaybooksPage, ReportsPage } from './pages/Operations';
 import { DemoProvider } from './context/DemoContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AuthContext';
 import './index.css';
@@ -17,13 +17,19 @@ function WorkspaceRoutes() {
     <Routes>
       <Route index element={<Navigate to="command" replace />} />
       <Route path="command" element={<CommandPage />} />
-      <Route path="incidents" element={<PlaceholderView title="Incidents Overview" icon="🚨" description="Log of all historic and active incidents globally." />} />
-      <Route path="zones" element={<PlaceholderView title="Zone Management" icon="🗺️" description="Configure floorplans, checkpoints, and risk limits." />} />
-      <Route path="staff" element={<PlaceholderView title="Staff Directory" icon="👥" description="Assign shifts and permission hierarchies." />} />
-      <Route path="playbooks" element={<PlaceholderView title="Playbook Editor" icon="📋" description="Define deterministic AI-guidance triggers." />} />
-      <Route path="reports" element={<PlaceholderView title="Compliance Reports" icon="📄" description="Auto-generated incident autopsy reports." />} />
+      <Route path="incident" element={<IncidentsPage />} />
+      <Route path="incidents" element={<IncidentsPage />} />
+      <Route path="zone" element={<ZonesPage />} />
+      <Route path="zones" element={<ZonesPage />} />
+      <Route path="staff" element={<StaffPage />} />
+      <Route path="playbook" element={<PlaybooksPage />} />
+      <Route path="playbooks" element={<PlaybooksPage />} />
+      <Route path="report" element={<ReportsPage />} />
+      <Route path="reports" element={<ReportsPage />} />
       <Route path="analytics" element={<AnalyticsPage />} />
+      <Route path="setting" element={<SetupPage />} />
       <Route path="settings" element={<SetupPage />} />
+      <Route path="*" element={<Navigate to="command" replace />} />
     </Routes>
   );
 }

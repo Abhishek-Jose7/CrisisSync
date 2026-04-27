@@ -11,7 +11,7 @@ import {
   Shield,
   Bell
 } from 'lucide-react';
-import { setupGestures } from '../../../shared/accessibility';
+import { setupGestures } from '../../../../shared/accessibility';
 import './enhanced-zone.css';
 
 export function EnhancedZoneLanding({ basePath = '' }) {
@@ -47,17 +47,21 @@ export function EnhancedZoneLanding({ basePath = '' }) {
   }, [activeTab, tabs]);
 
   function handleSOS() {
-    navigate(`${basePath}/sos`);
+    const token = state.qrToken || location.pathname.split('/').filter(Boolean).at(-1) || 'floor7-ghi789';
+    const routePrefix = basePath === '/demo' ? `${basePath}/${token}` : `${basePath}/zone/${token}`;
+    navigate(`${routePrefix}/sos`);
   }
 
   function handleEvacuation() {
-    const demoToken = basePath === '/demo' ? `/${state.qrToken}` : '';
-    navigate(`${basePath}${demoToken}/evacuate`);
+    const token = state.qrToken || location.pathname.split('/').filter(Boolean).at(-1) || 'floor7-ghi789';
+    const routePrefix = basePath === '/demo' ? `${basePath}/${token}` : '';
+    navigate(`${routePrefix}/evacuate`);
   }
 
   function handleGuide() {
-    const demoToken = basePath === '/demo' ? `/${state.qrToken}` : '';
-    navigate(`${basePath}${demoToken}/guide`);
+    const token = state.qrToken || location.pathname.split('/').filter(Boolean).at(-1) || 'floor7-ghi789';
+    const routePrefix = basePath === '/demo' ? `${basePath}/${token}` : '';
+    navigate(`${routePrefix}/guide`);
   }
 
   // Building map data

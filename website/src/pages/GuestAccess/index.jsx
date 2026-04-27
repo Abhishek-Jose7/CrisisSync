@@ -1,4 +1,4 @@
-import { ArrowRight, MapPinned } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CheckCircle2, Flame, MapPinned, Users } from 'lucide-react';
 import { guestDemoZones, roleLinks } from '../../siteConfig';
 
 export function GuestAccess() {
@@ -11,6 +11,24 @@ export function GuestAccess() {
           <p>
             Guests never create accounts. In production, they scan a zone-specific QR code. For demo and testing, select a zone below to experience the guest safety interface.
           </p>
+        </div>
+
+        <div className="mini-flow" style={{ marginBottom: 32 }}>
+          {[
+            { icon: Flame, title: 'Choose crisis type', meta: 'fire / medical / other' },
+            { icon: AlertTriangle, title: 'Declare immediate danger', meta: 'priority' },
+            { icon: Users, title: 'Count affected people', meta: 'severity' },
+            { icon: CheckCircle2, title: 'Confirm before sending', meta: 'reduce false alarms' },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <div className="mini-flow__item" key={item.title}>
+                <Icon size={18} />
+                <strong>{item.title}</strong>
+                <span>{item.meta}</span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="split" style={{ marginBottom: '48px' }}>

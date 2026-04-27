@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import QRCode from 'qrcode';
 import { useDemo } from '../../context/DemoContext';
 import { VENUE_TYPES, ZONE_TYPES, RISK_PROFILES, STAFF_ROLES } from '@shared/constants';
 import { CheckCircle, ChevronRight, AlertTriangle, Users, MapPin, FileText, Shield, QrCode } from 'lucide-react';
@@ -351,6 +352,27 @@ function ComplianceStep({ venue }) {
 }
 
 function QRStep({ zones, venue }) {
+  const [qrImages, setQrImages] = useState({});
+
+  useEffect(() => {
+    let cancelled = false;
+    async function buildCodes() {
+      const entries = await Promise.all(zones.map(async (zone) => {
+        const guestUrl = `${window.location.origin.replace('admin', 'guest')}/demo/${zone.qrToken || zone.zoneId}`;
+        const dataUrl = await QRCode.toDataURL(guestUrl, {
+          margin: 2,
+          width: 176,
+          errorCorrectionLevel: 'M',
+          color: { dark: '#111827', light: '#ffffff' },
+        });
+        return [zone.zoneId, { dataUrl, guestUrl }];
+      }));
+      if (!cancelled) setQrImages(Object.fromEntries(entries));
+    }
+    buildCodes();
+    return () => { cancelled = true; };
+  }, [zones]);
+
   return (
     <div>
       <h2 className="wizard__title">QR Code Generation</h2>
@@ -371,15 +393,23 @@ function QRStep({ zones, venue }) {
             <div style={{ fontWeight: 700, fontSize: 'var(--text-md)', marginBottom: 2 }}>{venue.name}</div>
             <div style={{ fontSize: 'var(--text-sm)', color: '#666', marginBottom: 'var(--space-4)' }}>{zone.name}</div>
             <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'center' }}>
-              <div style={{
-                width: 80, height: 80,
-                background: '#111',
-                borderRadius: 'var(--radius-sm)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'white', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)',
-              }}>
-                QR
-              </div>
+              {qrImages[zone.zoneId]?.dataUrl ? (
+                <img
+                  src={qrImages[zone.zoneId].dataUrl}
+                  alt={`Scannable guest QR code for ${zone.name}`}
+                  style={{ width: 96, height: 96, borderRadius: 'var(--radius-sm)', border: '6px solid white' }}
+                />
+              ) : (
+                <div style={{
+                  width: 96, height: 96,
+                  background: '#f3f4f6',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#111827', fontSize: 'var(--text-xs)', fontFamily: 'var(--font-mono)',
+                }}>
+                  Generating
+                </div>
+              )}
               <div>
                 <div style={{ fontSize: '8pt', fontWeight: 700, marginBottom: 4 }}>In an emergency:</div>
                 <div style={{ fontSize: '7pt', color: '#555', lineHeight: 1.6 }}>
@@ -391,6 +421,9 @@ function QRStep({ zones, venue }) {
             </div>
             <div style={{ fontSize: '6pt', color: '#aaa', marginTop: 'var(--space-3)' }}>
               Exit: {zone.exitRoute?.slice(0, 60)}…
+            </div>
+            <div style={{ fontSize: '6pt', color: '#666', marginTop: 4, wordBreak: 'break-all' }}>
+              {qrImages[zone.zoneId]?.guestUrl}
             </div>
           </div>
         ))}

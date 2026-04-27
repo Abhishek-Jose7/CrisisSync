@@ -60,8 +60,13 @@ function reducer(state, action) {
       return createInitialState(state.mode);
     case 'SET_INCIDENT':
       return { ...state, activeIncident: action.payload, zoneStatus: 'notified', completedTaskIds: [] };
-    case 'MARK_TASK':
-      return { ...state, completedTaskIds: [...state.completedTaskIds, action.payload] };
+    case 'TOGGLE_TASK': {
+      const done = state.completedTaskIds.includes(action.payload);
+      const completedTaskIds = done
+        ? state.completedTaskIds.filter(id => id !== action.payload)
+        : [...state.completedTaskIds, action.payload];
+      return { ...state, completedTaskIds };
+    }
     case 'UPDATE_STATUS':
       return { 
         ...state, 
@@ -142,7 +147,8 @@ export function StaffDemoProvider({ children, mode = 'main' }) {
       dispatch({ type: 'LOGOUT' });
     },
     setIncident: (sys) => dispatch({ type: 'SET_INCIDENT', payload: sys }),
-    markTask: (id) => dispatch({ type: 'MARK_TASK', payload: id }),
+    toggleTask: (id) => dispatch({ type: 'TOGGLE_TASK', payload: id }),
+    markTask: (id) => dispatch({ type: 'TOGGLE_TASK', payload: id }),
     updateStatus: (status) => dispatch({ type: 'UPDATE_STATUS', payload: status }),
     clearIncident: () => dispatch({ type: 'CLEAR_INCIDENT' }),
     addSOS: (payload) => dispatch({ type: 'ADD_SOS', payload })

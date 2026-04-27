@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Building2, Flame, HeartPulse, ShieldAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { orgTypes } from '../../siteConfig';
 
@@ -67,29 +67,39 @@ export function Solutions() {
           ))}
         </div>
 
+        <div className="card-grid card-grid--three" style={{ marginBottom: 32 }}>
+          {[
+            { icon: Flame, title: 'Fire and smoke', text: 'Kitchen, floor, panel, and smoke-observation workflows.' },
+            { icon: HeartPulse, title: 'Medical response', text: 'First-aid routing, responder staging, and clear guest guidance.' },
+            { icon: ShieldAlert, title: 'Security threats', text: 'Silent staff alerts and zone containment instructions.' },
+          ].map((scenario) => {
+            const Icon = scenario.icon;
+            return (
+              <article className="scenario-card" key={scenario.title}>
+                <div className="scenario-card__icon"><Icon size={24} /></div>
+                <div>
+                  <h3>{scenario.title}</h3>
+                  <p>{scenario.text}</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
         {Object.entries(solutionDetails).filter(([key]) => ['hotel', 'mall', 'hospital'].includes(key)).map(([key, detail]) => {
           const org = orgTypes.find(o => o.id === key);
           return (
             <div className="info-card" key={key} style={{ marginBottom: '16px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '0.75fr 1fr', gap: '24px', alignItems: 'start' }}>
                 <div>
-                  <h3 style={{ marginTop: 0 }}>{org.icon} {org.label}</h3>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Preloaded Zones</p>
-                  <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                    {detail.zones.map(z => <li key={z}>{z}</li>)}
-                  </ul>
+                  <Building2 size={22} />
+                  <h3 style={{ marginTop: 12 }}>{org.icon} {org.label}</h3>
+                  <p>{org.desc}</p>
                 </div>
                 <div>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px', marginTop: '8px' }}>Crisis Scenarios</p>
-                  <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                    {detail.scenarios.map(s => <li key={s}>{s}</li>)}
-                  </ul>
-                </div>
-                <div>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px', marginTop: '8px' }}>Staff Roles</p>
-                  <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>
-                    {detail.staffRoles.map(r => <li key={r}>{r}</li>)}
-                  </ul>
+                  <div className="tag-row">
+                    {[...detail.zones.slice(0, 5), ...detail.scenarios.slice(0, 3), ...detail.staffRoles.slice(0, 3)].map(item => <span key={item}>{item}</span>)}
+                  </div>
                 </div>
               </div>
             </div>

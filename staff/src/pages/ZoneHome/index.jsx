@@ -12,10 +12,14 @@ export function ZoneHome({ demoMode = false }) {
   const basePath = location.pathname.startsWith('/demo') ? '/demo' : '';
 
   useEffect(() => {
+    if (demoMode && !state.activeIncident) {
+      actions.setIncident({ crisisType: 'fire', severity: 2 });
+      return;
+    }
     if (state.activeIncident) {
       navigate(`${basePath}/incident`);
     }
-  }, [basePath, state.activeIncident, navigate]);
+  }, [actions, basePath, demoMode, state.activeIncident, navigate]);
 
   return (
     <>
