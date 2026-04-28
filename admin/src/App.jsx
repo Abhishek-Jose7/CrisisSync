@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CommandPage } from './pages/Command';
 import { SetupPage } from './pages/Setup';
 import { AnalyticsPage } from './pages/Analytics';
+import { CCTVPage } from './pages/CCTV';
 import { IncidentsPage, ZonesPage, StaffPage, PlaybooksPage, ReportsPage } from './pages/Operations';
 import { DemoProvider } from './context/DemoContext';
 import { AdminAuthProvider, useAdminAuth } from './context/AuthContext';
@@ -27,6 +28,7 @@ function WorkspaceRoutes() {
       <Route path="report" element={<ReportsPage />} />
       <Route path="reports" element={<ReportsPage />} />
       <Route path="analytics" element={<AnalyticsPage />} />
+      <Route path="cctv" element={<CCTVPage />} />
       <Route path="setting" element={<SetupPage />} />
       <Route path="settings" element={<SetupPage />} />
       <Route path="*" element={<Navigate to="command" replace />} />

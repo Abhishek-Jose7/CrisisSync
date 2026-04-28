@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useMemo, useReducer } from 'react';
+import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
 
 const GuestDemoContext = createContext(null);
 
@@ -136,6 +136,13 @@ function reducer(state, action) {
       };
     case 'RESOLVE_INCIDENT':
       return { ...state, activeIncident: null, severityLevel: null, broadcastMessage: null, sosSent: false };
+    case 'DEMO_BROADCAST':
+      return {
+        ...state,
+        broadcastMessage: action.payload.message,
+        activeIncident: action.payload.type === 'drill_resolved' ? null : state.activeIncident,
+        severityLevel: action.payload.type === 'drill_resolved' ? null : state.severityLevel,
+      };
     default:
       return state;
   }
@@ -151,6 +158,29 @@ export function GuestDemoProvider({ children, mode = 'main' }) {
     sendDetailedSos: (details) => dispatch({ type: 'SEND_DETAILED_SOS', payload: details }),
     resolveIncident: () => dispatch({ type: 'RESOLVE_INCIDENT' })
   }), []);
+
+  useEffect(() => {
+    if (mode !== 'demo') return undefined;
+
+    const applyStoredBroadcast = () => {
+      try {
+        const raw = localStorage.getItem('crisissync:demo:broadcast');
+        if (raw) dispatch({ type: 'DEMO_BROADCAST', payload: JSON.parse(raw) });
+      } catch {
+        // Ignore malformed demo broadcast data.
+      }
+    };
+
+    const handleStorage = (event) => {
+      if (event.key === 'crisissync:demo:broadcast' && event.newValue) {
+        dispatch({ type: 'DEMO_BROADCAST', payload: JSON.parse(event.newValue) });
+      }
+    };
+
+    applyStoredBroadcast();
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [mode]);
 
   return (
     <GuestDemoContext.Provider value={{ state, actions }}>

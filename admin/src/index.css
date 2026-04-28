@@ -406,7 +406,9 @@ body {
 
 /* ── Right Feed Panel ── */
 .feed-panel {
-  width: var(--feed-width);
+  width: min(100%, var(--feed-width));
+  max-width: 100%;
+  min-width: 0;
   background: var(--bg-primary);
   border-left: 1px solid var(--border-subtle);
   overflow-y: auto;
@@ -445,6 +447,7 @@ body {
 
 .feed-panel__body {
   flex: 1;
+  min-width: 0;
   overflow-y: auto;
   padding: var(--space-3);
   display: flex;
@@ -628,6 +631,7 @@ body {
 
 /* ── Alert Feed Item ── */
 .alert-item {
+  min-width: 0;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -654,6 +658,7 @@ body {
   align-items: center;
   gap: var(--space-2);
   margin-bottom: var(--space-2);
+  min-width: 0;
 }
 
 .alert-item__icon {
@@ -661,6 +666,10 @@ body {
 }
 
 .alert-item__type {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-primary);
@@ -677,6 +686,7 @@ body {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .alert-item__zone {
@@ -689,6 +699,8 @@ body {
   padding: 2px 6px;
   background: var(--bg-overlay);
   border-radius: var(--radius-sm);
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 /* ── AI Panel ── */
@@ -1031,8 +1043,10 @@ body {
 
 .timeline__content {
   flex: 1;
+  min-width: 0;
   color: var(--text-secondary);
   line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .timeline__actor {

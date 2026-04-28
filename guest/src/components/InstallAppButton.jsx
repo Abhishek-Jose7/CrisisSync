@@ -12,7 +12,7 @@ function detectInstalled() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
-export function InstallAppButton() {
+export function InstallAppButton({ compact = false }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isIOS] = useState(detectIOS);
   const [isInstalled, setIsInstalled] = useState(detectInstalled);
@@ -56,15 +56,16 @@ export function InstallAppButton() {
   return (
     <button 
       onClick={handleInstallClick} 
+      className={compact ? 'install-pwa-button install-pwa-button--compact' : 'install-pwa-button'}
       style={{
         display: 'flex', alignItems: 'center', gap: '8px',
         padding: '12px 24px', background: 'var(--text-primary)', color: 'var(--bg-dark)',
         border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer',
-        fontSize: '0.875rem', width: '100%', justifyContent: 'center',
-        marginTop: '16px'
+        fontSize: '0.875rem', width: compact ? 'auto' : '100%', justifyContent: 'center',
+        marginTop: compact ? 0 : '16px'
       }}
     >
-      <Download size={16} /> Install Official PWA
+      <Download size={16} /> {compact ? 'Install' : 'Install Official PWA'}
     </button>
   );
 }

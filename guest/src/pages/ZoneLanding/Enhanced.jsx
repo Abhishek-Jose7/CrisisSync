@@ -12,8 +12,9 @@ import {
   Bell,
   Route,
   MapPin,
-  Clock3
+  Download
 } from 'lucide-react';
+import { InstallAppButton } from '../../components/InstallAppButton';
 import './enhanced-zone.css';
 
 export function EnhancedZoneLanding({ basePath = '' }) {
@@ -37,9 +38,7 @@ export function EnhancedZoneLanding({ basePath = '' }) {
   }
 
   function handleEvacuation() {
-    const token = state.qrToken || location.pathname.split('/').filter(Boolean).at(-1) || 'floor7-ghi789';
-    const routePrefix = basePath === '/demo' ? `${basePath}/${token}` : '';
-    navigate(`${routePrefix}/evacuate`);
+    setActiveTab('map');
   }
 
   function handleGuide() {
@@ -112,17 +111,23 @@ export function EnhancedZoneLanding({ basePath = '' }) {
       {/* Header */}
       <div className="zone-header">
         <div className="zone-header-content">
-          <h1 className="zone-title">{state.venueName}</h1>
-          <div className="zone-badge">
-            <Navigation size={16} />
-            <span>{state.zoneName || 'Current Location'}</span>
+          <div>
+            <h1 className="zone-title">{state.venueName}</h1>
+            <span className="zone-kicker">Guest safety dashboard</span>
+          </div>
+          <div className="zone-header-actions">
+            <InstallAppButton compact />
+            <div className="zone-badge">
+              <Navigation size={16} />
+              <span>{state.zoneName || 'Current Location'}</span>
+            </div>
           </div>
         </div>
         
         {state.activeIncident && (
           <div className="incident-alert">
             <Bell size={20} />
-            <span>Emergency Active</span>
+            <span>{state.broadcastMessage || 'Emergency Active'}</span>
           </div>
         )}
       </div>
@@ -132,11 +137,16 @@ export function EnhancedZoneLanding({ basePath = '' }) {
         {/* Home Tab */}
         {activeTab === 'home' && (
           <div className="tab-content">
-            <div className="welcome-card">
-              <h2>Welcome to {state.zoneName || 'Your Zone'}</h2>
-              <p className="text-muted">
-                Your QR session is active. Keep this page open to receive important updates and instructions.
-              </p>
+            <div className="quick-actions quick-actions--primary">
+              <button className="action-card emergency action-card--hero" onClick={handleSOS}>
+                <div className="action-icon">
+                  <AlertTriangle size={34} />
+                </div>
+                <div className="action-content">
+                  <h3>Report SOS</h3>
+                  <p>Send an emergency report to venue staff</p>
+                </div>
+              </button>
             </div>
 
             <div className="guest-info-grid" aria-label="Current safety details">
@@ -150,31 +160,16 @@ export function EnhancedZoneLanding({ basePath = '' }) {
                 <span>Assembly Point</span>
                 <strong>{state.assemblyPoint}</strong>
               </div>
-              <div className="guest-info-card">
-                <Clock3 size={20} />
-                <span>Session Status</span>
-                <strong>Live zone updates enabled</strong>
-              </div>
             </div>
 
             <div className="quick-actions">
-              <button className="action-card emergency" onClick={handleSOS}>
-                <div className="action-icon">
-                  <AlertTriangle size={32} />
-                </div>
-                <div className="action-content">
-                  <h3>Emergency SOS</h3>
-                  <p>Report an emergency</p>
-                </div>
-              </button>
-
               <button className="action-card" onClick={handleEvacuation}>
                 <div className="action-icon">
                   <Navigation size={32} />
                 </div>
                 <div className="action-content">
-                  <h3>Evacuation Guide</h3>
-                  <p>View evacuation routes</p>
+                  <h3>Evacuation Map</h3>
+                  <p>View whole-building routes and exits</p>
                 </div>
               </button>
 
@@ -184,7 +179,7 @@ export function EnhancedZoneLanding({ basePath = '' }) {
                 </div>
                 <div className="action-content">
                   <h3>Safety Guide</h3>
-                  <p>Safety procedures</p>
+                  <p>Open step-by-step safety procedures</p>
                 </div>
               </button>
             </div>
@@ -203,7 +198,12 @@ export function EnhancedZoneLanding({ basePath = '' }) {
           <div className="tab-content">
             <div className="map-container">
               <div className="map-header">
-                <h3>Building Map</h3>
+                <h3>Whole-Building Evacuation Routes</h3>
+                <p>Choose any floor to see guest zones, stairwells, exits, and the route toward assembly.</p>
+                <div className="zone-badge">
+                <Download size={14} />
+                <span>Exit plan</span>
+              </div>
                 <div className="floor-selector">
                   {buildingMap.floors.map(floor => (
                     <button
@@ -221,6 +221,10 @@ export function EnhancedZoneLanding({ basePath = '' }) {
                 <svg viewBox="0 0 100 100" className="building-map">
                   {/* Building outline */}
                   <rect x="5" y="5" width="90" height="90" fill="none" stroke="#666" strokeWidth="1" />
+                  <path d="M50 50 C50 38 68 34 82 30" className="route-line route-line--primary" />
+                  <path d="M50 50 C38 64 48 78 50 90" className="route-line route-line--assembly" />
+                  <path d="M24 70 C34 78 42 84 50 90" className="route-line route-line--secondary" />
+                  <path d="M76 70 C68 78 58 84 50 90" className="route-line route-line--secondary" />
                   
                   {/* Current floor zones */}
                   {visibleFloor.zones.map(zone => (
@@ -295,7 +299,7 @@ export function EnhancedZoneLanding({ basePath = '' }) {
                   </g>
 
                   {/* Your location indicator */}
-                  <circle cx="50" cy="50" r="2" fill="#dc4242">
+                  <circle cx="50" cy="50" r="2" fill="#be123c">
                     <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" />
                     <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
                   </circle>

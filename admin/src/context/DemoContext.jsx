@@ -213,6 +213,7 @@ const INITIAL_STATE = {
       timestamp: new Date(Date.now() - 7 * 60000),
     },
   ],
+  broadcastMessage: 'FIRE drill started. Staff and guests should follow posted instructions.',
 };
 
 const EMPTY_STATE = {
@@ -334,9 +335,18 @@ function demoReducer(state, action) {
         activeIncident: incident,
         zoneStatuses,
         timeline: [timelineEntry],
-        alertFeed: [],
+        alertFeed: [{
+          sosId: `drill-${generateId()}`,
+          zoneId: triggeredByZoneId || state.zones[0].zoneId,
+          crisisType,
+          urgency: severity >= 3 ? 'high' : 'medium',
+          affectedCount: 3,
+          timestamp: now(),
+          guestSessionId: 'admin-drill',
+        }],
         aiSuggestions,
         cameraEvents,
+        broadcastMessage: `${crisisType.toUpperCase()} drill started. Staff and guests should follow posted instructions.`,
       };
     }
 
@@ -510,6 +520,32 @@ function demoReducer(state, action) {
           status: 'resolved',
           resolvedAt: now(),
         },
+        broadcastMessage: 'Drill resolved. Staff and guests may return to normal operations.',
+        timeline: [...state.timeline, timelineEntry],
+      };
+    }
+
+    case 'BROADCAST': {
+      const timelineEntry = {
+        eventId: generateId(),
+        eventType: action.payload.type || 'broadcast_sent',
+        actor: 'admin',
+        description: `Broadcast sent: ${action.payload.message}`,
+        timestamp: now(),
+      };
+
+      try {
+        localStorage.setItem('crisissync:demo:broadcast', JSON.stringify({
+          ...action.payload,
+          timestamp: now().toISOString(),
+        }));
+      } catch {
+        // Demo broadcast still updates in-memory state if storage is unavailable.
+      }
+
+      return {
+        ...state,
+        broadcastMessage: action.payload.message,
         timeline: [...state.timeline, timelineEntry],
       };
     }
@@ -583,6 +619,7 @@ export function DemoProvider({ children, seedDemo = true }) {
     setAISuggestions: useCallback((payload) => dispatch({ type: 'SET_AI_SUGGESTIONS', payload }), []),
     addCameraEvent: useCallback((payload) => dispatch({ type: 'ADD_CAMERA_EVENT', payload }), []),
     resolveIncident: useCallback(() => dispatch({ type: 'RESOLVE_INCIDENT' }), []),
+    broadcast: useCallback((payload) => dispatch({ type: 'BROADCAST', payload }), []),
     reset: useCallback(() => dispatch({ type: 'RESET' }), []),
     updateStaffMember: useCallback(async ({ staffId, patch }) => {
       dispatch({ type: 'UPDATE_STAFF_LOCAL', payload: { staffId, patch } });

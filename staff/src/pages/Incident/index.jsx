@@ -41,6 +41,11 @@ export function Incident() {
           </div>
           <div style={{ fontSize: '0.75rem', fontWeight: 500 }}>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
         </div>
+        {state.broadcastMessage && (
+          <div style={{ margin: 'var(--space-3) var(--space-4) 0', padding: '10px 12px', background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.28)', borderRadius: 'var(--radius-md)', color: '#93c5fd', fontSize: '0.8125rem', fontWeight: 700 }}>
+            Command broadcast: {state.broadcastMessage}
+          </div>
+        )}
 
         {/* Tabs */}
         <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.1)', marginTop: 'var(--space-4)' }}>

@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useMemo, useReducer } from 'react';
+import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
 
 const StaffDemoContext = createContext(null);
 
@@ -61,7 +61,8 @@ const BASE_STATE = {
       description: 'Guest SOS from Floor 7: fire, urgency: high, affected: 3',
       timestamp: new Date(Date.now() - 2 * 60000),
     },
-  ]
+  ],
+  broadcastMessage: 'FIRE drill started. Staff and guests should follow posted instructions.'
 };
 
 const storageKey = (mode, uid) => `crisissync:staff:${mode}:profile:${uid}`;
@@ -110,6 +111,13 @@ function reducer(state, action) {
       };
     case 'CLEAR_INCIDENT':
       return { ...state, activeIncident: null, completedTaskIds: [], zoneStatus: 'clear', alertFeed: [], timeline: [] };
+    case 'DEMO_BROADCAST':
+      return {
+        ...state,
+        broadcastMessage: action.payload.message,
+        activeIncident: action.payload.type === 'drill_resolved' ? null : state.activeIncident,
+        zoneStatus: action.payload.type === 'drill_resolved' ? 'clear' : state.zoneStatus,
+      };
     case 'ADD_SOS': {
       const { zoneId, crisisType, urgency, affectedCount } = action.payload;
       const zone = state.zones.find(z => z.zoneId === zoneId);
@@ -185,6 +193,29 @@ export function StaffDemoProvider({ children, mode = 'main' }) {
     clearIncident: () => dispatch({ type: 'CLEAR_INCIDENT' }),
     addSOS: (payload) => dispatch({ type: 'ADD_SOS', payload })
   }), [mode, state.staffUser]);
+
+  useEffect(() => {
+    if (mode !== 'demo') return undefined;
+
+    const applyStoredBroadcast = () => {
+      try {
+        const raw = localStorage.getItem('crisissync:demo:broadcast');
+        if (raw) dispatch({ type: 'DEMO_BROADCAST', payload: JSON.parse(raw) });
+      } catch {
+        // Ignore malformed demo broadcast data.
+      }
+    };
+
+    const handleStorage = (event) => {
+      if (event.key === 'crisissync:demo:broadcast' && event.newValue) {
+        dispatch({ type: 'DEMO_BROADCAST', payload: JSON.parse(event.newValue) });
+      }
+    };
+
+    applyStoredBroadcast();
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [mode]);
 
   return (
     <StaffDemoContext.Provider value={{ state, actions }}>

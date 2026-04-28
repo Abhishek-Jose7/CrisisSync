@@ -33,11 +33,19 @@ export function CommandPage() {
       triggeredByZoneId: zoneId || 'zone-floor7',
       triggeredBy: 'adminDrill',
     });
+    actions.broadcast({
+      type: 'drill_started',
+      message: `${crisisType.toUpperCase()} drill started. Staff and guests should follow posted instructions.`,
+    });
     setShowDrillModal(false);
   }
 
   function handleResolve() {
     actions.resolveIncident();
+    actions.broadcast({
+      type: 'drill_resolved',
+      message: 'Drill resolved. Staff and guests may return to normal operations.',
+    });
   }
 
   return (
@@ -73,7 +81,7 @@ export function CommandPage() {
           {active ? (
             <>
               <button onClick={() => navigate(`${basePath}/incidents`)} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 16px', borderRadius: 'var(--radius-sm)', color: 'white', cursor: 'pointer', fontSize: '0.8125rem' }}>View Details</button>
-              <button onClick={handleResolve} style={{ background: 'rgba(16,185,129,0.2)', border: '1px solid rgba(16,185,129,0.4)', padding: '8px 16px', borderRadius: 'var(--radius-sm)', color: '#10b981', cursor: 'pointer', fontSize: '0.8125rem', fontWeight: 600 }}>Resolve</button>
+              <button onClick={handleResolve} style={{ background: 'rgba(16,185,129,0.2)', border: '1px solid rgba(16,185,129,0.4)', padding: '8px 16px', borderRadius: 'var(--radius-sm)', color: '#10b981', cursor: 'pointer', fontSize: '0.8125rem', fontWeight: 600 }}>Stop Drill</button>
             </>
           ) : (
             <button onClick={() => setShowDrillModal(true)} style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', padding: '8px 16px', borderRadius: 'var(--radius-sm)', color: '#ef4444', cursor: 'pointer', fontSize: '0.8125rem', fontWeight: 600 }}>
@@ -82,6 +90,12 @@ export function CommandPage() {
           )}
         </div>
       </div>
+
+      {state.broadcastMessage && (
+        <div style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.28)', borderRadius: 'var(--radius-md)', padding: '10px 14px', color: '#93c5fd', fontSize: '0.875rem', fontWeight: 700 }}>
+          Broadcast sent: {state.broadcastMessage}
+        </div>
+      )}
 
       {/* Key Metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)' }}>
@@ -170,7 +184,7 @@ export function CommandPage() {
         </div>
 
         {/* Right Side: Feed */}
-        <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255,255,255,0.05)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255,255,255,0.05)', padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
             <h3 style={{ fontSize: '0.875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Live Alert Feed</h3>
             <button onClick={() => navigate(`${basePath}/incidents`)} style={{ background: 'none', border: 'none', color: 'var(--severity-info)', fontSize: '0.75rem', textDecoration: 'none', cursor: 'pointer' }}>View All →</button>
