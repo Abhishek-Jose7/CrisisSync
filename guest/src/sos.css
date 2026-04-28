@@ -25,7 +25,7 @@
 .sos-back-btn {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: #cbd5e1;
   cursor: pointer;
   padding: var(--space-2);
   border-radius: var(--radius-md);
@@ -46,6 +46,7 @@
   margin: 0;
   flex: 1;
   text-align: center;
+  color: #ffffff;
 }
 
 .sos-progress {
@@ -83,12 +84,12 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: var(--space-2);
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .sos-step-header p {
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: #cbd5e1;
   line-height: 1.5;
 }
 
@@ -101,7 +102,7 @@
 }
 
 .crisis-card {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 2px solid transparent;
   border-radius: var(--radius-xl);
   padding: var(--space-5);
@@ -152,12 +153,12 @@
   font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: var(--space-2);
-  color: var(--text-primary);
+  color: #111827;
 }
 
 .crisis-card p {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #4b5563;
   line-height: 1.4;
 }
 
@@ -170,7 +171,7 @@
 }
 
 .danger-card {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 2px solid transparent;
   border-radius: var(--radius-xl);
   padding: var(--space-5);
@@ -223,12 +224,12 @@
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: var(--space-1);
-  color: var(--text-primary);
+  color: #111827;
 }
 
 .danger-card p {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #4b5563;
   line-height: 1.4;
 }
 
@@ -241,7 +242,7 @@
 }
 
 .count-card {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 2px solid transparent;
   border-radius: var(--radius-xl);
   padding: var(--space-5);
@@ -274,18 +275,18 @@
   font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: var(--space-1);
-  color: var(--text-primary);
+  color: #111827;
 }
 
 .count-card p {
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: #4b5563;
   line-height: 1.4;
 }
 
 /* Confirmation Screen */
 .confirmation-card {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
   padding: var(--space-5);
@@ -318,7 +319,7 @@
 .confirmation-item h4 {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #6b7280;
   margin-bottom: var(--space-1);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -327,7 +328,7 @@
 .confirmation-item p {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #111827;
   margin: 0;
 }
 
@@ -348,8 +349,8 @@
 
 .sos-actions .btn-outline {
   background: transparent;
-  border: 2px solid var(--border-default);
-  color: var(--text-secondary);
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  color: #ffffff;
 }
 
 .sos-actions .btn-outline:hover {

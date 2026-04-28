@@ -136,42 +136,45 @@ const INITIAL_STATE = {
     { staffId: 'warden-008', name: 'Rohit Gupta', role: 'seniorWarden', assignedZones: ['zone-conference'], isOnDuty: true, currentShift: 'evening', phone: '+91-98201-23465', email: 'rohit.gupta@grandorchid.com' },
   ],
 
-  activeIncident: null,
-  zoneStatuses: {},
+  activeIncident: {
+    incidentId: 'incident-demo-shared-001',
+    venueId: 'demo-venue-001',
+    crisisType: 'fire',
+    triggeredBy: 'guestSOS',
+    triggeredAt: new Date(Date.now() - 2 * 60000),
+    triggeredByZoneId: 'zone-floor7',
+    status: 'active',
+    resolvedAt: null,
+    currentSeverity: 3,
+    severityHistory: [{ level: 3, setAt: new Date(Date.now() - 2 * 60000), setBy: 'system' }],
+    commandHolder: 'admin-001',
+    autonomousModeActive: false,
+    affectedZones: ['zone-floor7'],
+  },
+  zoneStatuses: {
+    'zone-lobby': { zoneId: 'zone-lobby', wardenId: 'warden-003', wardenName: 'Suresh Nair', notifiedAt: new Date(Date.now() - 2 * 60000), acknowledgedAt: null, statusLabel: 'notified', checklistCompletion: 0, completedTaskIds: [], lastUpdateAt: new Date(Date.now() - 2 * 60000) },
+    'zone-kitchen': { zoneId: 'zone-kitchen', wardenId: 'warden-002', wardenName: 'Meena Patel', notifiedAt: new Date(Date.now() - 2 * 60000), acknowledgedAt: null, statusLabel: 'notified', checklistCompletion: 0, completedTaskIds: [], lastUpdateAt: new Date(Date.now() - 2 * 60000) },
+    'zone-floor7': { zoneId: 'zone-floor7', wardenId: 'warden-001', wardenName: 'Ravi Sharma', notifiedAt: new Date(Date.now() - 2 * 60000), acknowledgedAt: null, statusLabel: 'notified', checklistCompletion: 0, completedTaskIds: [], lastUpdateAt: new Date(Date.now() - 2 * 60000) },
+    'zone-parking': { zoneId: 'zone-parking', wardenId: 'warden-004', wardenName: 'Deepa Joshi', notifiedAt: new Date(Date.now() - 2 * 60000), acknowledgedAt: null, statusLabel: 'standby', checklistCompletion: 0, completedTaskIds: [], lastUpdateAt: new Date(Date.now() - 2 * 60000) },
+  },
   alertFeed: [
     {
-      sosId: 'sos-demo-001',
+      sosId: 'sos-demo-shared-001',
       zoneId: 'zone-floor7',
-      crisisType: 'medical',
-      urgency: 'medium',
-      affectedCount: 1,
-      timestamp: new Date(Date.now() - 5 * 60000), // 5 minutes ago
-      guestSessionId: 'session-demo-001',
-    },
-    {
-      sosId: 'sos-demo-002',
-      zoneId: 'zone-restaurant',
       crisisType: 'fire',
       urgency: 'high',
       affectedCount: 3,
-      timestamp: new Date(Date.now() - 12 * 60000), // 12 minutes ago
-      guestSessionId: 'session-demo-002',
+      timestamp: new Date(Date.now() - 2 * 60000),
+      guestSessionId: 'guest-session-floor7-ghi789',
     },
   ],
   timeline: [
     {
       eventId: 'event-demo-001',
-      eventType: 'system_check',
-      actor: 'system',
-      description: 'System health check completed. All zones operational.',
-      timestamp: new Date(Date.now() - 30 * 60000), // 30 minutes ago
-    },
-    {
-      eventId: 'event-demo-002',
-      eventType: 'shift_change',
-      actor: 'system',
-      description: 'Evening shift activated. 8 wardens on duty.',
-      timestamp: new Date(Date.now() - 25 * 60000), // 25 minutes ago
+      eventType: 'sos_received',
+      actor: 'guest',
+      description: 'Guest SOS from Floor 7: fire, urgency: high, affected: 3',
+      timestamp: new Date(Date.now() - 2 * 60000),
     },
   ],
   aiSuggestions: [

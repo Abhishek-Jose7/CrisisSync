@@ -5,11 +5,17 @@ import { useState } from 'react';
 export function Incident() {
   const { state, actions } = useStaffDemo();
   const [activeTab, setActiveTab] = useState('tasks');
+  const [statusNotice, setStatusNotice] = useState(null);
 
   const actInc = state.activeIncident || { crisisType: 'FIRE', severity: 2 };
   const tasks = state.checklist || [];
   const completedCount = tasks.filter(task => state.completedTaskIds.includes(task.id)).length;
   const completion = tasks.length ? Math.round((completedCount / tasks.length) * 100) : 0;
+
+  function handleQuickStatus(status, label) {
+    actions.updateStatus(status);
+    setStatusNotice(label);
+  }
 
   return (
     <>
@@ -61,6 +67,11 @@ export function Incident() {
                 <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{completedCount} / {tasks.length} Completed</div>
               </div>
               <div style={{ color: 'var(--severity-3)', fontSize: '1rem', fontWeight: 600, marginBottom: '12px' }}>{state.zoneStatus.replaceAll('_', ' ')}</div>
+              {statusNotice && (
+                <div style={{ marginBottom: 12, padding: '10px 12px', borderRadius: 8, background: 'rgba(59, 130, 246, 0.12)', border: '1px solid rgba(59, 130, 246, 0.25)', color: '#93c5fd', fontSize: '0.8125rem', fontWeight: 700 }}>
+                  Status sent to command: {statusNotice}
+                </div>
+              )}
               <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
                  <div style={{ width: `${completion}%`, height: '100%', background: completion === 100 ? '#10b981' : '#f59e0b' }}></div>
               </div>
@@ -116,9 +127,9 @@ export function Incident() {
           <div style={{ marginTop: 'var(--space-8)' }}>
             <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--text-secondary)', marginBottom: 'var(--space-3)' }}>QUICK ACTIONS</div>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={() => actions.updateStatus('zone_clear')} style={{ flex: 1, padding: '12px 8px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '8px', color: '#10b981', fontWeight: 600, fontSize: '0.875rem' }}>Zone Safe</button>
-              <button onClick={() => actions.updateStatus('request_backup')} style={{ flex: 1, padding: '12px 8px', background: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: '8px', color: '#f59e0b', fontWeight: 600, fontSize: '0.875rem' }}>Assistance Needed</button>
-              <button onClick={() => actions.updateStatus('person_needs_help')} style={{ flex: 1, padding: '12px 8px', background: 'var(--severity-3-bg)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '8px', color: 'var(--severity-3)', fontWeight: 600, fontSize: '0.875rem' }}>Emergency Now</button>
+              <button onClick={() => handleQuickStatus('zone_clear', 'Zone Safe')} style={{ flex: 1, padding: '12px 8px', background: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '8px', color: '#10b981', fontWeight: 600, fontSize: '0.875rem' }}>Zone Safe</button>
+              <button onClick={() => handleQuickStatus('request_backup', 'Assistance Needed')} style={{ flex: 1, padding: '12px 8px', background: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.4)', borderRadius: '8px', color: '#f59e0b', fontWeight: 600, fontSize: '0.875rem' }}>Assistance Needed</button>
+              <button onClick={() => handleQuickStatus('person_needs_help', 'Emergency Now')} style={{ flex: 1, padding: '12px 8px', background: 'var(--severity-3-bg)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '8px', color: 'var(--severity-3)', fontWeight: 600, fontSize: '0.875rem' }}>Emergency Now</button>
             </div>
           </div>
           

@@ -84,6 +84,12 @@ const BASE_STATE = {
   sosUrgency: null, // 'safe', 'help'
 };
 
+const DEMO_ALERT = {
+  crisisType: 'fire',
+  severityLevel: 3,
+  broadcastMessage: 'Fire alert on Floor 7. Use stairwells only and proceed to Gate B assembly.',
+};
+
 function createInitialState(mode) {
   return {
     ...BASE_STATE,
@@ -100,9 +106,9 @@ function reducer(state, action) {
         ...zone,
         qrToken: action.payload,
         sessionId: `guest-session-${action.payload}`,
-        activeIncident: null,
-        severityLevel: null,
-        broadcastMessage: null,
+        activeIncident: state.mode === 'demo' ? DEMO_ALERT.crisisType : null,
+        severityLevel: state.mode === 'demo' ? DEMO_ALERT.severityLevel : null,
+        broadcastMessage: state.mode === 'demo' ? DEMO_ALERT.broadcastMessage : null,
         sosSent: false,
         sosUrgency: null,
       };
@@ -123,7 +129,10 @@ function reducer(state, action) {
         sosDetails: action.payload,
         // Trigger incident if high urgency
         activeIncident: action.payload.urgency === 'high' ? action.payload.crisisType : state.activeIncident,
-        severityLevel: action.payload.urgency === 'high' ? 3 : state.severityLevel
+        severityLevel: action.payload.urgency === 'high' ? 3 : state.severityLevel,
+        broadcastMessage: action.payload.urgency === 'high'
+          ? `${action.payload.crisisType.toUpperCase()} SOS received from ${state.zoneName || 'guest zone'}. Staff are responding.`
+          : state.broadcastMessage
       };
     case 'RESOLVE_INCIDENT':
       return { ...state, activeIncident: null, severityLevel: null, broadcastMessage: null, sosSent: false };

@@ -157,9 +157,9 @@ body::before {
 
 .navbar__inner {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 .brand {
@@ -183,7 +183,7 @@ body::before {
 .nav-links {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px;
 }
 
@@ -206,7 +206,9 @@ body::before {
 .nav-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
+  grid-column: 3;
 }
 
 /* ==========================================================================
@@ -1302,18 +1304,23 @@ code {
   }
   .navbar { height: auto; min-height: 72px; }
   .navbar__inner { 
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
     padding: 14px 0; 
   }
+  .brand { grid-column: 1; }
+  .hamburger { grid-column: 3; grid-row: 1; justify-self: end; }
   .nav-links { 
     display: none; 
+    grid-column: 1 / -1;
+    grid-row: 3;
     width: 100%;
     flex-direction: column;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    margin-top: 14px;
+    align-items: stretch;
+    border-top: 1px solid var(--border-default);
+    margin-top: 4px;
     padding-top: 8px;
     gap: 4px;
   }
@@ -1327,8 +1334,23 @@ code {
     justify-content: flex-start;
   }
   .nav-actions {
-    margin-left: auto;
-    margin-right: 12px;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: stretch;
+    margin: 0;
+    width: 100%;
+  }
+  .nav-actions > .btn,
+  .nav-actions > .demo-dropdown,
+  .nav-actions .btn-demo {
+    flex: 1 1 0;
+  }
+  .nav-actions .btn {
+    padding: 0 10px;
+  }
+  .demo-dropdown__menu {
+    left: auto;
+    right: 0;
   }
 
   .hero { padding-top: 160px; }
@@ -1358,13 +1380,26 @@ code {
 @media (max-width: 640px) {
   .container { width: min(100% - 32px, 1180px); }
   .nav-actions { 
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-right: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
   }
   .nav-actions .btn {
-    padding: 0 10px;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 8px;
     font-size: 0.75rem;
+  }
+  .nav-actions .btn svg {
+    width: 13px;
+    height: 13px;
+  }
+  .demo-dropdown__menu {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    top: 116px;
+    width: auto;
   }
 
   .hero { padding-bottom: 56px; }

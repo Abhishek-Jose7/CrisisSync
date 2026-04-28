@@ -1,8 +1,8 @@
 import { useGuestDemo } from '../../context/DemoContext';
-import { Globe, ShieldCheck, ChevronRight, ShieldAlert, Navigation, Users, Phone } from 'lucide-react';
+import { Globe, ShieldCheck, ChevronRight, ShieldAlert, Navigation, Users, Phone, LayoutDashboard } from 'lucide-react';
 import { BottomNav } from '../../components/BottomNav';
 import { InstallAppButton } from '../../components/InstallAppButton';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ export function EvacuationMode({ basePath = '' }) {
         
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-8)' }}>
-          <div style={{ fontWeight: 600, fontSize: '1.25rem' }}>10:24</div>
+          <LiveClock />
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'white', padding: '4px 12px', borderRadius: '16px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', fontSize: '0.75rem', fontWeight: 600 }}>
              <Globe size={14} /> English <ChevronRight size={14} />
           </div>
@@ -53,6 +53,29 @@ export function EvacuationMode({ basePath = '' }) {
           <div style={{ marginTop: 'var(--space-4)', fontSize: '0.875rem', fontWeight: 600, color: '#475467' }}>
             {state.sosSent ? 'Staff have been notified' : 'Tap for Help'}
           </div>
+          {state.sosSent && (
+            <button
+              onClick={() => navigate(routePrefix || '/')}
+              style={{
+                marginTop: '12px',
+                border: '1px solid rgba(59, 130, 246, 0.25)',
+                background: '#ffffff',
+                color: '#1d4ed8',
+                borderRadius: '14px',
+                minHeight: 46,
+                padding: '0 18px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                fontWeight: 700,
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(29, 78, 216, 0.08)'
+              }}
+            >
+              <LayoutDashboard size={18} />
+              Back to dashboard
+            </button>
+          )}
         </div>
 
         {/* Active Alert Nav */}
@@ -68,7 +91,7 @@ export function EvacuationMode({ basePath = '' }) {
             <ChevronRight size={18} color="var(--color-danger)" />
           </div>
 
-          <MenuLink onClick={() => navigate(`${routePrefix}/guide`)} icon={<ShieldCheck size={20} color="#3b82f6" />} title="What to do" subtitle="Step-by-step safety instructions" />
+          <MenuLink onClick={() => navigate(`${routePrefix}/guide?mode=what-to-do`)} icon={<ShieldCheck size={20} color="#3b82f6" />} title="What to do" subtitle="Immediate actions for this alert" />
           <MenuLink onClick={() => navigate(`${routePrefix}/guide`)} icon={<Navigation size={20} color="#10b981" />} title="Evacuation Guide" subtitle="Find your way to safety" />
           <MenuLink onClick={() => navigate(`${routePrefix}/assembly`)} icon={<Users size={20} color="#8b5cf6" />} title="Assembly Point" subtitle="Where to go after evacuation" />
           <MenuLink icon={<Phone size={20} color="#f59e0b" />} title="Emergency Numbers" subtitle="Important contacts" />
@@ -89,6 +112,17 @@ export function EvacuationMode({ basePath = '' }) {
       <BottomNav />
     </div>
   );
+}
+
+function LiveClock() {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <div style={{ fontWeight: 600, fontSize: '1.25rem' }}>{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>;
 }
 
 function MenuLink({ icon, title, subtitle, onClick }) {

@@ -18,7 +18,7 @@ const BASE_STATE = {
     { zoneId: 'zone-spa', name: 'Wellness Spa & Gym', type: 'spa' },
     { zoneId: 'zone-conference', name: 'Conference Center', type: 'conference' },
   ],
-  activeIncident: null,
+  activeIncident: { crisisType: 'fire', severity: 3, triggeredByZoneId: 'zone-floor7' },
   checklist: [
     { id: 'f1', task: 'Knock on all room doors. Use master key if no response.', priority: 1 },
     { id: 'f2', task: 'Direct all guests to the nearest stairwell. Do not allow lift use.', priority: 2 },
@@ -42,18 +42,37 @@ const BASE_STATE = {
     'zone-spa': { statusLabel: 'clear' },
     'zone-conference': { statusLabel: 'clear' },
   },
-  alertFeed: [],
-  timeline: []
+  alertFeed: [
+    {
+      sosId: 'sos-demo-shared-001',
+      zoneId: 'zone-floor7',
+      crisisType: 'fire',
+      urgency: 'high',
+      affectedCount: 3,
+      timestamp: new Date(Date.now() - 2 * 60000),
+      guestSessionId: 'guest-session-floor7-ghi789',
+    },
+  ],
+  timeline: [
+    {
+      eventId: 'staff-demo-shared-001',
+      eventType: 'sos_received',
+      actor: 'guest',
+      description: 'Guest SOS from Floor 7: fire, urgency: high, affected: 3',
+      timestamp: new Date(Date.now() - 2 * 60000),
+    },
+  ]
 };
 
 const storageKey = (mode, uid) => `crisissync:staff:${mode}:profile:${uid}`;
 
 function createInitialState(mode) {
-  return {
+  const base = {
     ...BASE_STATE,
     mode,
     staffUser: null,
   };
+  return mode === 'demo' ? base : { ...base, activeIncident: null, alertFeed: [], timeline: [] };
 }
 
 function reducer(state, action) {

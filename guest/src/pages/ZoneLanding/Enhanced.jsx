@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGuestDemo } from '../../context/DemoContext';
 import { 
@@ -9,17 +9,19 @@ import {
   Navigation,
   Phone,
   Shield,
-  Bell
+  Bell,
+  Route,
+  MapPin,
+  Clock3
 } from 'lucide-react';
-import { setupGestures } from '../../../../shared/accessibility';
 import './enhanced-zone.css';
 
 export function EnhancedZoneLanding({ basePath = '' }) {
   const [activeTab, setActiveTab] = useState('home');
-  const { state, actions } = useGuestDemo();
+  const [selectedFloorId, setSelectedFloorId] = useState(null);
+  const { state } = useGuestDemo();
   const navigate = useNavigate();
   const location = useLocation();
-  const containerRef = useRef(null);
 
   const tabs = [
     { id: 'home', icon: Info, label: 'Info' },
@@ -27,24 +29,6 @@ export function EnhancedZoneLanding({ basePath = '' }) {
     { id: 'safety', icon: Shield, label: 'Safety' },
     { id: 'contacts', icon: Phone, label: 'Help' },
   ];
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const cleanup = setupGestures(containerRef.current, {
-        onSwipeLeft: () => {
-          const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
-          const nextIndex = (currentIndex + 1) % tabs.length;
-          setActiveTab(tabs[nextIndex].id);
-        },
-        onSwipeRight: () => {
-          const currentIndex = tabs.findIndex(tab => tab.id === activeTab);
-          const prevIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
-          setActiveTab(tabs[prevIndex].id);
-        }
-      });
-      return cleanup;
-    }
-  }, [activeTab, tabs]);
 
   function handleSOS() {
     const token = state.qrToken || location.pathname.split('/').filter(Boolean).at(-1) || 'floor7-ghi789';
@@ -91,6 +75,14 @@ export function EnhancedZoneLanding({ basePath = '' }) {
         ]
       },
       {
+        id: 'level1',
+        name: 'Level 1',
+        zones: [
+          { id: 'spa', name: 'Spa & Gym', x: 30, y: 50, current: state.zoneId === 'zone-spa' },
+          { id: 'conference', name: 'Conference', x: 70, y: 50, current: state.zoneId === 'zone-conference' },
+        ]
+      },
+      {
         id: 'basement',
         name: 'Basement',
         zones: [
@@ -109,9 +101,14 @@ export function EnhancedZoneLanding({ basePath = '' }) {
   const currentFloor = buildingMap.floors.find(floor => 
     floor.zones.some(zone => zone.current)
   ) || buildingMap.floors[0];
+  const visibleFloor = buildingMap.floors.find(floor => floor.id === (selectedFloorId || currentFloor.id)) || currentFloor;
+
+  useEffect(() => {
+    setSelectedFloorId(currentFloor.id);
+  }, [currentFloor.id]);
 
   return (
-    <div className="enhanced-zone-container" ref={containerRef}>
+    <div className="enhanced-zone-container">
       {/* Header */}
       <div className="zone-header">
         <div className="zone-header-content">
@@ -140,6 +137,24 @@ export function EnhancedZoneLanding({ basePath = '' }) {
               <p className="text-muted">
                 Your QR session is active. Keep this page open to receive important updates and instructions.
               </p>
+            </div>
+
+            <div className="guest-info-grid" aria-label="Current safety details">
+              <div className="guest-info-card">
+                <Route size={20} />
+                <span>Exit Route</span>
+                <strong>{state.exitRoute}</strong>
+              </div>
+              <div className="guest-info-card">
+                <MapPin size={20} />
+                <span>Assembly Point</span>
+                <strong>{state.assemblyPoint}</strong>
+              </div>
+              <div className="guest-info-card">
+                <Clock3 size={20} />
+                <span>Session Status</span>
+                <strong>Live zone updates enabled</strong>
+              </div>
             </div>
 
             <div className="quick-actions">
@@ -193,7 +208,8 @@ export function EnhancedZoneLanding({ basePath = '' }) {
                   {buildingMap.floors.map(floor => (
                     <button
                       key={floor.id}
-                      className={`floor-btn ${currentFloor.id === floor.id ? 'active' : ''}`}
+                      className={`floor-btn ${visibleFloor.id === floor.id ? 'active' : ''}`}
+                      onClick={() => setSelectedFloorId(floor.id)}
                     >
                       {floor.name}
                     </button>
@@ -207,7 +223,7 @@ export function EnhancedZoneLanding({ basePath = '' }) {
                   <rect x="5" y="5" width="90" height="90" fill="none" stroke="#666" strokeWidth="1" />
                   
                   {/* Current floor zones */}
-                  {currentFloor.zones.map(zone => (
+                  {visibleFloor.zones.map(zone => (
                     <g key={zone.id}>
                       <rect
                         x={zone.x - 15}

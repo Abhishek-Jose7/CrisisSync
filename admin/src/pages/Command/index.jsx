@@ -1,7 +1,7 @@
 import { FeedPanel } from '../../components/FeedPanel';
 import { useDemo } from '../../context/DemoContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AlertTriangle, Shield, Users, MapPin, Activity, Play, Flame, Zap, HeartPulse, ShieldAlert, Droplets } from 'lucide-react';
 
 export function CommandPage() {
@@ -218,10 +218,10 @@ export function CommandPage() {
 function LiveClock() {
   const [time, setTime] = useState(new Date());
   
-  useState(() => {
+  useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 30000);
     return () => clearInterval(interval);
-  });
+  }, []);
 
   return (
     <div style={{ fontSize: '0.875rem', textAlign: 'right' }}>

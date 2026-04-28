@@ -34,6 +34,19 @@ export function Navbar() {
           <span>CrisisSync</span>
         </NavLink>
 
+        <div className={`nav-links ${mobileMenuOpen ? 'nav-links--open' : ''}`}>
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+
         <div className="nav-actions">
           {/* Role Access Buttons */}
           <a className="btn btn-ghost btn-small" href={roleLinks.guest.production} target="_blank" rel="noreferrer" title="Guest Access">
@@ -109,19 +122,6 @@ export function Navbar() {
         <button className="hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle navigation">
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-
-        <div className={`nav-links ${mobileMenuOpen ? 'nav-links--open' : ''}`}>
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `nav-link${isActive ? ' nav-link--active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
       </div>
     </nav>
   );

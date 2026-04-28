@@ -71,6 +71,14 @@ export function Home() {
   const morphRef = useRef(null);
 
   useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 900px)');
+    if (mobileQuery.matches) {
+      setActiveIndex(0);
+      setPrevIndex(null);
+      setTransitioning(false);
+      return undefined;
+    }
+
     const observers = sectionRefs.current.map((el, i) => {
       if (!el) return null;
       const obs = new IntersectionObserver(
@@ -333,7 +341,7 @@ export function Home() {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding: 80px 64px 80px 48px;
+          padding: 92px 72px 92px 56px;
           opacity: 0.3;
           transition: opacity 0.5s ease;
         }
@@ -344,7 +352,7 @@ export function Home() {
 
         /* Brand name — large, bold, no gradient */
         .brand-name {
-          font-size: clamp(3rem, 5.5vw, 6rem) !important;
+          font-size: clamp(4rem, 7.5vw, 8rem) !important;
           line-height: 1.0 !important;
           font-weight: 400 !important;
           letter-spacing: -0.01em;
@@ -354,7 +362,7 @@ export function Home() {
         }
 
         .venue-panel h1:not(.brand-name) {
-          font-size: clamp(1.8rem, 3vw, 3rem);
+          font-size: clamp(2.4rem, 4.2vw, 4.5rem);
           line-height: 1.15;
           margin: 16px 0 20px;
           color: var(--text-primary);
@@ -363,10 +371,10 @@ export function Home() {
         }
 
         .venue-panel__lead {
-          font-size: 1.05rem;
+          font-size: clamp(1.1rem, 1.5vw, 1.35rem);
           line-height: 1.65;
           color: var(--text-secondary);
-          max-width: 480px;
+          max-width: 620px;
           margin-bottom: 32px;
         }
 
@@ -394,7 +402,7 @@ export function Home() {
         .morph-stage {
           position: relative;
           width: 100%;
-          max-width: 600px;
+          max-width: 760px;
           aspect-ratio: 4/3;
           flex-shrink: 0;
         }
@@ -512,23 +520,58 @@ export function Home() {
         @media (max-width: 900px) {
           .venue-hero {
             grid-template-columns: 1fr;
+            min-height: auto;
           }
 
           .venue-hero__right {
-            position: relative;
-            height: auto;
-            min-height: unset;
-            padding: 40px 24px;
+            display: none;
           }
 
           .venue-panel {
             min-height: unset;
-            padding: 60px 24px;
+            padding: 108px 24px 64px;
             opacity: 1 !important;
+          }
+
+          .venue-panel:not(:first-child) {
+            display: none;
+          }
+
+          .brand-name {
+            font-size: clamp(4.2rem, 18vw, 6.5rem) !important;
+          }
+
+          .venue-panel__lead {
+            font-size: 1.2rem;
+            line-height: 1.6;
+          }
+
+          .venue-panel__actions .btn {
+            min-height: 52px;
+            font-size: 1rem;
           }
 
           .morph-stage {
             max-width: 100%;
+          }
+        }
+
+        @media (max-width: 560px) {
+          .venue-panel {
+            padding: 132px 18px 56px;
+          }
+
+          .brand-name {
+            font-size: clamp(3.7rem, 18vw, 5.4rem) !important;
+          }
+
+          .venue-panel__lead {
+            font-size: 1.08rem;
+          }
+
+          .venue-panel__actions,
+          .venue-panel__actions .btn {
+            width: 100%;
           }
         }
       `}</style>

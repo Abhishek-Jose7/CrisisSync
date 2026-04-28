@@ -6,6 +6,7 @@
   height: 100vh;
   background: linear-gradient(135deg, #0a0e14 0%, #1a222c 100%);
   color: #e8edf2;
+  overscroll-behavior: contain;
 }
 
 /* Header */
@@ -89,6 +90,43 @@
   text-align: center;
 }
 
+.guest-info-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.guest-info-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px var(--space-3);
+  align-items: start;
+  background: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  color: #12121a;
+}
+
+.guest-info-card svg {
+  grid-row: span 2;
+  color: var(--color-info);
+}
+
+.guest-info-card span {
+  color: #5a5a73;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.guest-info-card strong {
+  color: #12121a;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
 .welcome-card h2 {
   font-size: 1.25rem;
   font-weight: 700;
@@ -131,6 +169,11 @@
 
 .action-card.emergency:hover {
   background: var(--status-critical);
+  color: white;
+}
+
+.action-card.emergency:hover h3,
+.action-card.emergency:hover p {
   color: white;
 }
 
@@ -208,6 +251,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.floor-btn:hover {
+  border-color: var(--color-info);
+  color: var(--text-primary);
 }
 
 .floor-btn.active {
