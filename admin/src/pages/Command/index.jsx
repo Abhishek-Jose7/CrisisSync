@@ -121,10 +121,11 @@ export function CommandPage() {
                 const isAffected = state.activeIncident?.affectedZones?.includes(zone.zoneId);
                 const sosCount = state.alertFeed.filter(a => a.zoneId === zone.zoneId).length;
                 const statusColor = !active ? '#10b981'
-                  : status?.statusLabel === 'clear' ? '#10b981'
+                  : (status?.statusLabel === 'clear' || status?.statusLabel === 'zone_clear') ? '#10b981'
                   : status?.statusLabel === 'acknowledged' ? '#3b82f6'
-                  : isAffected ? '#ef4444' : '#6b7280';
-                
+                  : (status?.statusLabel === 'person_needs_help' || status?.statusLabel === 'request_backup') ? '#ef4444'
+                  : isAffected ? '#f59e0b' : '#6b7280';
+
                 return (
                   <button key={zone.zoneId} onClick={() => navigate(`${basePath}/zones`)} style={{
                     background: isAffected ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.03)',
@@ -137,7 +138,7 @@ export function CommandPage() {
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor, boxShadow: `0 0 6px ${statusColor}` }} />
                     </div>
                     <span style={{ fontSize: '0.6875rem', color: 'var(--text-secondary)' }}>
-                      {active ? (status?.statusLabel || 'standby') : 'clear'}{sosCount > 0 ? ` · SOS ×${sosCount}` : ''}
+                      {active ? (status?.statusLabel?.replace(/_/g, ' ') || 'standby') : 'clear'}{sosCount > 0 ? ` · SOS ×${sosCount}` : ''}
                     </span>
                   </button>
                 );

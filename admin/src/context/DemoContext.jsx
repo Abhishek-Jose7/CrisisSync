@@ -330,6 +330,16 @@ function demoReducer(state, action) {
         },
       ];
 
+      try {
+        localStorage.setItem('crisissync:demo:incident', JSON.stringify({
+          action: 'start',
+          incident: { crisisType, severity: severity || 2, triggeredByZoneId: triggeredByZoneId || state.zones[0].zoneId },
+          timestamp: now().toISOString(),
+        }));
+      } catch {
+        // Storage unavailable.
+      }
+
       return {
         ...state,
         activeIncident: incident,
@@ -513,6 +523,15 @@ function demoReducer(state, action) {
         timestamp: now(),
       };
 
+      try {
+        localStorage.setItem('crisissync:demo:incident', JSON.stringify({
+          action: 'resolve',
+          timestamp: now().toISOString(),
+        }));
+      } catch {
+        // Storage unavailable.
+      }
+
       return {
         ...state,
         activeIncident: {
@@ -586,6 +605,50 @@ function demoReducer(state, action) {
       };
     }
 
+    case 'SYNC_ZONE_STATUS': {
+      const { zoneId, statusLabel, wardenName } = action.payload;
+      const zone = state.zones.find(z => z.zoneId === zoneId);
+      const prevStatus = state.zoneStatuses[zoneId];
+
+      const timelineEntry = {
+        eventId: generateId(),
+        eventType: 'zone_status_changed',
+        actor: wardenName || prevStatus?.wardenName || 'warden',
+        description: `${zone?.name || zoneId} status changed to: ${statusLabel}`,
+        timestamp: now(),
+      };
+
+      return {
+        ...state,
+        zoneStatuses: {
+          ...state.zoneStatuses,
+          [zoneId]: {
+            ...prevStatus,
+            statusLabel,
+            lastUpdateAt: now(),
+          },
+        },
+        timeline: [...state.timeline, timelineEntry],
+      };
+    }
+
+    case 'SYNC_CHECKLIST': {
+      const { zoneId, completion, completedTaskIds } = action.payload;
+      const prevStatus = state.zoneStatuses[zoneId];
+      return {
+        ...state,
+        zoneStatuses: {
+          ...state.zoneStatuses,
+          [zoneId]: {
+            ...prevStatus,
+            checklistCompletion: completion,
+            completedTaskIds: completedTaskIds || prevStatus?.completedTaskIds || [],
+            lastUpdateAt: now(),
+          },
+        },
+      };
+    }
+
     default:
       return state;
   }
@@ -607,6 +670,41 @@ export function DemoProvider({ children, seedDemo = true }) {
       console.error(error);
       dispatch({ type: 'LOAD_FIRESTORE', payload: null });
     });
+  }, [seedDemo]);
+
+  // Listen for cross-dashboard demo sync events from staff PWA
+  useEffect(() => {
+    if (!seedDemo) return undefined;
+
+    // Apply any zone status that was set before admin opened
+    try {
+      const storedZoneStatus = localStorage.getItem('crisissync:demo:zoneStatus');
+      if (storedZoneStatus) {
+        dispatch({ type: 'SYNC_ZONE_STATUS', payload: JSON.parse(storedZoneStatus) });
+      }
+      const storedChecklist = localStorage.getItem('crisissync:demo:checklist');
+      if (storedChecklist) {
+        dispatch({ type: 'SYNC_CHECKLIST', payload: JSON.parse(storedChecklist) });
+      }
+    } catch {
+      // Ignore malformed stored data.
+    }
+
+    const handleStorage = (event) => {
+      try {
+        if (event.key === 'crisissync:demo:zoneStatus' && event.newValue) {
+          dispatch({ type: 'SYNC_ZONE_STATUS', payload: JSON.parse(event.newValue) });
+        }
+        if (event.key === 'crisissync:demo:checklist' && event.newValue) {
+          dispatch({ type: 'SYNC_CHECKLIST', payload: JSON.parse(event.newValue) });
+        }
+      } catch {
+        // Ignore malformed events.
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, [seedDemo]);
 
   const actions = {

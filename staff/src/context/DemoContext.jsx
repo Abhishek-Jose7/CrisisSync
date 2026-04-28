@@ -98,17 +98,44 @@ function reducer(state, action) {
       const completedTaskIds = done
         ? state.completedTaskIds.filter(id => id !== action.payload)
         : [...state.completedTaskIds, action.payload];
+      const totalTasks = state.checklist?.length || 1;
+      const completion = Math.round((completedTaskIds.length / totalTasks) * 100);
+      // Sync checklist progress to admin demo dashboard via localStorage
+      try {
+        localStorage.setItem('crisissync:demo:checklist', JSON.stringify({
+          zoneId: state.staffUser?.assignedZoneId,
+          completion,
+          completedTaskIds,
+          timestamp: new Date().toISOString(),
+        }));
+      } catch {
+        // Storage unavailable — still update in-memory state.
+      }
       return { ...state, completedTaskIds };
     }
-    case 'UPDATE_STATUS':
+    case 'UPDATE_STATUS': {
+      const zoneId = state.staffUser?.assignedZoneId;
+      const newStatus = action.payload;
+      // Write to localStorage so admin demo dashboard can sync
+      try {
+        localStorage.setItem('crisissync:demo:zoneStatus', JSON.stringify({
+          zoneId,
+          statusLabel: newStatus,
+          wardenName: state.staffUser?.name || 'Staff',
+          timestamp: new Date().toISOString(),
+        }));
+      } catch {
+        // Storage unavailable — still update in-memory state.
+      }
       return { 
         ...state, 
-        zoneStatus: action.payload,
+        zoneStatus: newStatus,
         allZoneStatuses: {
             ...state.allZoneStatuses,
-            [state.staffUser?.assignedZoneId]: { statusLabel: action.payload }
+            [zoneId]: { statusLabel: newStatus }
         }
       };
+    }
     case 'CLEAR_INCIDENT':
       return { ...state, activeIncident: null, completedTaskIds: [], zoneStatus: 'clear', alertFeed: [], timeline: [] };
     case 'DEMO_BROADCAST':
@@ -208,7 +235,20 @@ export function StaffDemoProvider({ children, mode = 'main' }) {
 
     const handleStorage = (event) => {
       if (event.key === 'crisissync:demo:broadcast' && event.newValue) {
-        dispatch({ type: 'DEMO_BROADCAST', payload: JSON.parse(event.newValue) });
+        try {
+          dispatch({ type: 'DEMO_BROADCAST', payload: JSON.parse(event.newValue) });
+        } catch { /* ignore */ }
+      }
+      // Listen for incident start/stop from admin demo dashboard
+      if (event.key === 'crisissync:demo:incident' && event.newValue) {
+        try {
+          const data = JSON.parse(event.newValue);
+          if (data.action === 'start') {
+            dispatch({ type: 'SET_INCIDENT', payload: data.incident });
+          } else if (data.action === 'resolve') {
+            dispatch({ type: 'CLEAR_INCIDENT' });
+          }
+        } catch { /* ignore */ }
       }
     };
 
